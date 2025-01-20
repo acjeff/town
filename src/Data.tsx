@@ -44,7 +44,7 @@ export const Buildings: Array<Building> = [
         owner: 'JESSIE',
         width: 200,
         height: 200,
-        frontDoorFacing: 'east',
+        frontDoorFacing: 'north',
         top: 100,
         left: 100
     },
@@ -54,7 +54,7 @@ export const Buildings: Array<Building> = [
         owner: 'TODD',
         width: 200,
         height: 200,
-        frontDoorFacing: 'east',
+        frontDoorFacing: 'south',
         top: 350,
         left: 100
     },
@@ -169,4 +169,5 @@ export const NPCs: Array<NPC> = [
     }
 ]
 
-export const Collidables: Array<Array<object>> = [Buildings, NPCs, [{id: 'Player'}]]
+export const sentientBeings: Array<Array<object>> = [NPCs, [{id: 'Player'}]];
+export const Collidables: Array<Array<object>> = [Buildings, NPCs, [{id: 'Player'}]];

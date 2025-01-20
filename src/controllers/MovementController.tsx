@@ -65,6 +65,10 @@ export const calculateNewPosition = function ({
             nextTop + characterWidth / 2
         );
 
+        if (idToMove === 'Player') {
+            console.log(nextElements, ': nextElements');
+        }
+
         // Filter the elements to find collidables
         collisions = nextElements.filter((element) => {
             // Ignore the current NPC itself
@@ -73,7 +77,7 @@ export const calculateNewPosition = function ({
             // Check if the element is in Collidables
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-expect-error
-            return Collidables.flat().some((collidable) => collidable.id === element.id);
+            return Collidables.flat().some((collidable) => element.id.includes(collidable.id) && !element.id.includes('SENSOR'));
         });
     }
 
