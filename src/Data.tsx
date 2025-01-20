@@ -56,7 +56,8 @@ export const Buildings: Array<Building> = [
         height: 200,
         frontDoorFacing: 'south',
         top: 350,
-        left: 100
+        left: 100,
+        open: true
     },
     {
         id: 'STEVE_HOME',

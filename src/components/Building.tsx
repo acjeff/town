@@ -47,8 +47,8 @@ function Building({building}: NPCProps) {
             left: building.left
         }
     ];
-    let doorTop: number | undefined;
-    let doorLeft: number | undefined;
+    let doorTop: number = 1;
+    let doorLeft: number = 1;
     switch (building.frontDoorFacing) {
         case 'north':
             doorTop = building.top - (doorWH / 2) + 2;
@@ -66,20 +66,25 @@ function Building({building}: NPCProps) {
             doorTop = building.top + building.height / 2 - (doorWH / 2);
             doorLeft = building.left + building.width - (doorWH / 2) + wallThickness - 2;
     }
-    return walls.map((wall: wall) => <div className={'Building'} id={`${building.id}_wall_${wall.position}`} style={{
+    return walls.map((wall: wall) => <div key={`${building.id}_wall_${wall.position}`} className={'Building'} id={`${building.id}_wall_${wall.position}`} style={{
         width: `${wall.width}px`,
         height: `${wall.height}px`,
         top: `${wall.top}px`,
         left: `${wall.left}px`
     }}/>).concat([
-        <div className={`door-sensor ${building.frontDoorFacing}`} id={`${building.id}_DOOR_SENSOR`} style={{
+        <div key={`${building.id}_SENSOR`} className={`door-sensor`}
+             id={`${building.id}_SENSOR`} style={{
             top: `${doorTop}px`,
             left: `${doorLeft}px`,
             zIndex: 2
         }}>
-            <div className={'door'} id={`${building.id}_DOOR`}/>
         </div>,
-        <div className="name-label" style={{
+        <div key={`${building.id}_DOOR`} className={`door ${building.open ? 'open' : ''} ${building.frontDoorFacing}`} id={`${building.id}_DOOR`} style={{
+            top: `${doorTop + doorWH / 2}px`,
+            left: `${doorLeft}px`,
+            zIndex: 2
+        }}/>,
+        <div key={`${building.id}_NAME_LABEL`} className="name-label" style={{
             color: NPCs.find(npc => building.owner === npc.id)?.color || 'black',
             top: `${building.top}px`,
             left: `${building.left}px`,

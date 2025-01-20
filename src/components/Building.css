@@ -19,39 +19,52 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
 
-    .door {
-        width: 3px;
-        height: 100%;
-        background: sandybrown;
-        position: absolute;
-    }
+.door {
+    width: 3px;
+    height: 100%;
+    background: sandybrown;
+    position: absolute;
+    transition: 0.3s all ease-in;
 
     &.east {
-        .door {
-            width: 3px;
-            height: 100%;
+        width: 5px;
+        height: 50px;
+
+        &.open {
+            transform: rotate(-90deg);
+            transform-origin: bottom;
         }
     }
 
     &.west {
-        .door {
-            width: 3px;
-            height: 100%;
+        width: 5px;
+        height: 50px;
+
+        &.open {
+            transform: rotate(90deg);
+            transform-origin: bottom;
         }
     }
 
     &.north {
-        .door {
-            height: 3px;
-            width: 100%;
+        height: 5px;
+        width: 50px;
+
+        &.open {
+            transform: rotate(90deg);
+            transform-origin: left;
         }
     }
 
     &.south {
-        .door {
-            height: 3px;
-            width: 100%;
+        height: 5px;
+        width: 50px;
+
+        &.open {
+            transform: rotate(90deg);
+            transform-origin: right;
         }
     }
 }

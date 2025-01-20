@@ -77,7 +77,34 @@ export const calculateNewPosition = function ({
             // Check if the element is in Collidables
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-expect-error
-            return Collidables.flat().some((collidable) => element.id.includes(collidable.id) && !element.id.includes('SENSOR'));
+            return Collidables.flat().some((collidable: { id: string }) => {
+                const isSensorPresent = nextElements.some((e: { id: string }) => e.id.includes('SENSOR'));
+
+                if (idToMove === 'Player') {
+                    console.log({
+                        isSensorPresent,
+                        elementId: element.id,
+                        collidableId: collidable.id,
+                        collidingWithDoor: nextElements.some((e: { id: string }) => e.id.includes('DOOR')),
+                        generalCollision: element.id.includes(collidable.id)
+                    });
+                }
+
+                // Condition 1: If a sensor is present, only allow collision with doors
+                if (isSensorPresent) {
+                    // Restrict to doors and ensure the element collides with the door specifically
+                    return nextElements.some((e: { id: string }) => e.id.includes('DOOR')) && element.id.includes(collidable.id);
+                }
+
+                // Condition 2: Do not collide with sensors themselves
+                if (element.id.includes('SENSOR')) {
+                    return false;
+                }
+
+                // Condition 3: Otherwise, allow collision with anything in the collidables list
+                return element.id.includes(collidable.id);
+            });
+
         });
     }
 

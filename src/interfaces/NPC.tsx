@@ -14,7 +14,8 @@ export interface Building {
     height: number,
     frontDoorFacing: string,
     top: number,
-    left: number
+    left: number,
+    open?: boolean
 }
 
 export interface NPC {
