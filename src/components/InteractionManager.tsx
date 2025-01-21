@@ -4,7 +4,6 @@ import DoorOptions from "./DoorOptions.tsx";
 import {ReactNode} from "react";
 
 function InteractionManager({position, sensorDoms, interactingId, buildings, setBuildings}: {
-    showing: boolean,
     position: NPC["position"],
     sensorDoms: Array<Element>,
     interactingId: NPC["id"],
