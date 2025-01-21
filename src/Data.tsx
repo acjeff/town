@@ -1,5 +1,4 @@
 import {InventoryItem, NPC, Building} from './interfaces/NPC'
-
 export const Items: Array<InventoryItem> = [
     {
         id: 'CHOCOLATE_BAR',
@@ -34,14 +33,21 @@ export const Items: Array<InventoryItem> = [
         name: `Todd's Home Keycard`,
         category: 'Key',
         value: 0
+    },
+    {
+        id: 'PLAYER_KEYCARD',
+        opens: 'PLAYER_HOME',
+        name: `Your Home Keycard`,
+        category: 'Key',
+        value: 0
     }
 ]
-
 export const Buildings: Array<Building> = [
     {
         id: 'JESSIE_HOME',
         name: `Jessie's Home`,
         owner: 'JESSIE',
+        keyId: 'JESSIE_KEYCARD',
         width: 200,
         height: 200,
         frontDoorFacing: 'north',
@@ -57,7 +63,8 @@ export const Buildings: Array<Building> = [
         frontDoorFacing: 'south',
         top: 350,
         left: 100,
-        open: true
+        keyId: 'JESSIE_KEYCARD',
+        locked: true
     },
     {
         id: 'STEVE_HOME',
@@ -67,7 +74,9 @@ export const Buildings: Array<Building> = [
         height: 200,
         frontDoorFacing: 'east',
         top: 600,
-        left: 100
+        left: 100,
+        keyId: 'STEVE_KEYCARD',
+        locked: true
     },
     {
         id: 'IAN_HOME',
@@ -77,7 +86,9 @@ export const Buildings: Array<Building> = [
         height: 400,
         frontDoorFacing: 'west',
         top: 100,
-        left: 700
+        left: 700,
+        keyId: 'IAN_KEYCARD',
+        locked: true
     },
     {
         id: 'PLAYER_HOME',
@@ -87,10 +98,11 @@ export const Buildings: Array<Building> = [
         height: 200,
         frontDoorFacing: 'west',
         top: 600,
-        left: 700
+        left: 700,
+        keyId: 'PLAYER_KEYCARD',
+        locked: true
     }
 ]
-
 export const NPCs: Array<NPC> = [
     {
         id: 'JESSIE',
@@ -169,6 +181,8 @@ export const NPCs: Array<NPC> = [
 
     }
 ]
+export const Inventory: Array<InventoryItem["id"]> = ["PLAYER_KEYCARD", 'JESSIE_KEYCARD'];
 
 export const sentientBeings: Array<Array<object>> = [NPCs, [{id: 'Player'}]];
 export const Collidables: Array<Array<object>> = [Buildings, NPCs, [{id: 'Player'}]];
+export const Everything: Array<Array<object>> = [Buildings, NPCs, Items, [{id: 'Player'}]];

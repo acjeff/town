@@ -2,8 +2,9 @@ import type {Building} from "../interfaces/NPC.tsx";
 import {NPCs} from "../Data.tsx";
 import './Building.css';
 
-interface NPCProps {
+interface BuildingProps {
     building: Building;
+    updateBuildingsRef: number;
 }
 
 interface wall {
@@ -16,7 +17,8 @@ interface wall {
 const wallThickness: number = 5;
 const doorWH: number = 50;
 
-function Building({building}: NPCProps) {
+function Building({building, updateBuildingsRef}: BuildingProps) {
+    console.log(updateBuildingsRef, ' : updateBuildingsRef');
     const walls: Array<wall> = [
         {
             position: 'top',
@@ -49,22 +51,28 @@ function Building({building}: NPCProps) {
     ];
     let doorTop: number = 1;
     let doorLeft: number = 1;
+    let topModifier: number = 0;
+    let leftModifier: number = 0;
     switch (building.frontDoorFacing) {
         case 'north':
             doorTop = building.top - (doorWH / 2) + 2;
             doorLeft = building.left + building.width / 2 - (doorWH / 2);
+            topModifier = -doorWH / 2 - 2 + doorWH;
         break;
         case 'south':
             doorTop = building.top + building.height - (doorWH / 2) - 2;
             doorLeft = building.left + building.width / 2 - (doorWH / 2);
+            topModifier = -doorWH / 2 - 3 + doorWH;
         break;
         case 'west':
             doorTop = building.top + building.height / 2 - (doorWH / 2);
             doorLeft = building.left - (doorWH / 2) - wallThickness + 2;
+            leftModifier = -doorWH / 2 - 2 + doorWH;
         break;
         case 'east':
             doorTop = building.top + building.height / 2 - (doorWH / 2);
             doorLeft = building.left + building.width - (doorWH / 2) + wallThickness - 2;
+            leftModifier = -doorWH / 2 - 2 + doorWH;
     }
     return walls.map((wall: wall) => <div key={`${building.id}_wall_${wall.position}`} className={'Building'} id={`${building.id}_wall_${wall.position}`} style={{
         width: `${wall.width}px`,
@@ -72,16 +80,16 @@ function Building({building}: NPCProps) {
         top: `${wall.top}px`,
         left: `${wall.left}px`
     }}/>).concat([
-        <div key={`${building.id}_SENSOR`} className={`door-sensor`}
-             id={`${building.id}_SENSOR`} style={{
+        <div key={`${building.id}/SENSOR/FRONT_D00R`} className={`door-sensor`}
+             id={`${building.id}/SENSOR/FRONT_D00R`} style={{
             top: `${doorTop}px`,
             left: `${doorLeft}px`,
             zIndex: 2
         }}>
         </div>,
-        <div key={`${building.id}_DOOR`} className={`door ${building.open ? 'open' : ''} ${building.frontDoorFacing}`} id={`${building.id}_DOOR`} style={{
-            top: `${doorTop + doorWH / 2}px`,
-            left: `${doorLeft}px`,
+        <div key={`${building.id}/DOOR/FRONT_D00R`} className={`door ${building.open ? 'open' : ''} ${building.frontDoorFacing}`} id={`${building.id}/DOOR/FRONT_D00R`} style={{
+            top: `${doorTop + topModifier}px`,
+            left: `${doorLeft + leftModifier}px`,
             zIndex: 2
         }}/>,
         <div key={`${building.id}_NAME_LABEL`} className="name-label" style={{

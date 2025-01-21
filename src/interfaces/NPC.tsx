@@ -15,7 +15,9 @@ export interface Building {
     frontDoorFacing: string,
     top: number,
     left: number,
-    open?: boolean
+    open?: boolean,
+    locked?: boolean,
+    keyId?: string
 }
 
 export interface NPC {

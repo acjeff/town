@@ -18,16 +18,17 @@ function NPC({npc, updatePosition}: NPCProps) {
 
     // Change direction every 5 seconds
     useEffect(() => {
+        let randomDuration = Math.floor(Math.random() * (4000 - 1000 + 1)) + 1000;
         const interval = setInterval(() => {
             setDirection(getRandomDirection());
-        }, 2000);
+        }, randomDuration);
 
         return () => clearInterval(interval); // Cleanup interval on unmount
     }, []);
 
     // Update NPC position based on direction
     useEffect(() => {
-        const interval = setInterval(() => {
+        const interval = setInterval(() => requestAnimationFrame(() => {
             updatePosition(calculateNewPosition({
                 prevPosition: npc.position,
                 direction: direction,
@@ -37,20 +38,12 @@ function NPC({npc, updatePosition}: NPCProps) {
                 callback: (newDirection: string) => {
                     if (newDirection) {
                         setDirection(newDirection);
-                        // updatePosition(calculateNewPosition({
-                        //     prevPosition: npc.position,
-                        //     direction: newDirection,
-                        //     walkSpeed: 1,
-                        //     characterWidth: 10,
-                        //     idToMove: npc.id
-                        // }));
                     }
                     return true;
                 }
             }));
-        }, 16);
-
-        return () => clearInterval(interval); // Cleanup interval on unmount
+        }), 5); // 60 FPS update rate
+        return () => clearInterval(interval);
     }, [npc, direction, updatePosition]);
 
     return (

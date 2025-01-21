@@ -2,8 +2,9 @@ import './Player.css';
 import { useState } from "react";
 import { NPCs as initialNPCs } from "../Data.tsx"; // Import initial NPC data
 import NPC from "./NPC.tsx";
+import {Building} from "../interfaces/NPC.tsx";
 
-function NPCManager() {
+function NPCManager({buildings}: {buildings: Building[]}) {
     // Store NPCs in state
     const [npcs, setNpcs] = useState(initialNPCs);
 

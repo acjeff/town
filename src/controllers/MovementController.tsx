@@ -24,6 +24,7 @@ interface CalculateNewPositionParams {
     characterWidth: number;
     idToMove: string;
     callback?: (newPosition: string) => boolean;
+    interactionCallBack?: (sensorDoms: Array<Element>) => void;
 }
 
 export const calculateNewPosition = function ({
@@ -32,7 +33,8 @@ export const calculateNewPosition = function ({
                                                   walkSpeed,
                                                   characterWidth,
                                                   idToMove,
-                                                  callback
+                                                  callback,
+                                                  interactionCallBack
                                               }: CalculateNewPositionParams) {
     let {left, top} = prevPosition;
     let nextLeft = left;
@@ -65,8 +67,8 @@ export const calculateNewPosition = function ({
             nextTop + characterWidth / 2
         );
 
-        if (idToMove === 'Player') {
-            console.log(nextElements, ': nextElements');
+        if (interactionCallBack) {
+            interactionCallBack(nextElements)
         }
 
         // Filter the elements to find collidables
@@ -79,16 +81,6 @@ export const calculateNewPosition = function ({
             // @ts-expect-error
             return Collidables.flat().some((collidable: { id: string }) => {
                 const isSensorPresent = nextElements.some((e: { id: string }) => e.id.includes('SENSOR'));
-
-                if (idToMove === 'Player') {
-                    console.log({
-                        isSensorPresent,
-                        elementId: element.id,
-                        collidableId: collidable.id,
-                        collidingWithDoor: nextElements.some((e: { id: string }) => e.id.includes('DOOR')),
-                        generalCollision: element.id.includes(collidable.id)
-                    });
-                }
 
                 // Condition 1: If a sensor is present, only allow collision with doors
                 if (isSensorPresent) {
@@ -115,7 +107,6 @@ export const calculateNewPosition = function ({
         top = nextTop;
     } else {
         if (callback) {
-            console.log(`${idToMove} collided with`, collisions.map((el) => el.id));
             // Stop movement or reverse it
             switch (direction) {
                 case 'up':
@@ -135,8 +126,8 @@ export const calculateNewPosition = function ({
     }
 
     // Ensure the NPC doesn't move out of bounds
-    left = Math.max(0, Math.min(left, window._worldWidth - characterWidth));
-    top = Math.max(0, Math.min(top, window._worldHeight - characterWidth));
+    left = Math.round(Math.max(0, Math.min(left, window._worldWidth - characterWidth)));
+    top = Math.round(Math.max(0, Math.min(top, window._worldHeight - characterWidth)));
 
     return {left, top};
 };
