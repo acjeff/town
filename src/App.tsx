@@ -33,7 +33,7 @@ function App() {
         <div id="camera">
             <div id="town">
                 <Player buildings={buildings} setBuildings={updateBuildings}/>
-                <NPCManager buildings={buildings}/>
+                <NPCManager/>
                 <BuildingManager updateBuildingsRef={updateBuildingsRef} buildings={buildings}/>
             </div>
         </div>
