@@ -55,9 +55,7 @@ export const Buildings = [
             left: 100,
             width: 200,
             height: 200,
-        },
-        doorOpen: true,
-        locked: false
+        }
     },
     {
         id: 'TODD_HOME',
@@ -72,9 +70,7 @@ export const Buildings = [
             width: 200,
             height: 200,
         },
-        keyId: 'JESSIE_KEYCARD',
-        locked: false,
-        doorOpen: true
+        keyId: 'JESSIE_KEYCARD'
     },
     {
         id: 'STEVE_HOME',
@@ -89,9 +85,7 @@ export const Buildings = [
             width: 200,
             height: 200
         },
-        keyId: 'STEVE_KEYCARD',
-        locked: false,
-        doorOpen: true
+        keyId: 'STEVE_KEYCARD'
     },
     {
         id: 'IAN_HOME',
@@ -106,9 +100,7 @@ export const Buildings = [
             width: 200,
             height: 400
         },
-        keyId: 'IAN_KEYCARD',
-        locked: false,
-        doorOpen: true
+        keyId: 'IAN_KEYCARD'
     },
     {
         id: 'PLAYER_HOME',
@@ -123,9 +115,7 @@ export const Buildings = [
             width: 200,
             height: 200
         },
-        keyId: 'PLAYER_KEYCARD',
-        locked: false,
-        doorOpen: true
+        keyId: 'PLAYER_KEYCARD'
     }
 ]
 export const NPCs = [
