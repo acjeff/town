@@ -1,21 +1,43 @@
 import { Buildings, NPCs, Inventory } from "./data.js";
+import {renderInteractionPrompt} from "./InteractionOptions.js";
 import Building from "./building.js";
 import NPC from "./npc.js";
 import Player from "./player.js";
 import InputHandler from "./InputHandler.js";
 import Camera from "./camera.js";
-
 // Canvas setup
 window._canvas = document.getElementById("gameCanvas");
 window._context = window._canvas.getContext('2d');
+// Canvas setup
+
 window._obstacles = [];
 window._sensors = [];
+window._interactionOptions = [];
 window._canvas.width = window.innerWidth;
 window._canvas.height = window.innerHeight;
 window._context.fillStyle = "lightblue";
 window._context.fillRect(0, 0, window._canvas.width, window._canvas.height);
 
 let keyPressed = false;
+
+const setCanvasResolution = () => {
+    const canvas = window._canvas;
+    const context = window._context;
+
+    // Get device pixel ratio
+    const dpr = window.devicePixelRatio || 1;
+
+    // Adjust canvas size for high-resolution rendering
+    canvas.width = window.innerWidth * dpr;
+    canvas.height = window.innerHeight * dpr;
+
+    // Scale the canvas back to the intended display size
+    canvas.style.width = `${window.innerWidth}px`;
+    canvas.style.height = `${window.innerHeight}px`;
+
+    // Scale the rendering context to match the device pixel ratio
+    context.scale(dpr, dpr);
+};
 
 window.addEventListener('keydown', (evt) => {
     if (evt.key === 'e' && !keyPressed) {
@@ -37,31 +59,13 @@ window._player = new Player({
     name: 'Player',
     health: 100,
     color: 'blue',
-    position: { top: 600, left: 600 , width: 20, height: 20},
+    position: { top: 600, left: 600 , width: 15, height: 15 },
     inventory: Inventory
 });
 const camera = new Camera(window._canvas, window._player);
 window._camera = camera;
 window._buildings = Buildings.map(building => new Building(building));
 window._npcs = NPCs.map(npc => new NPC(npc));
-
-// Interaction prompt renderer
-function renderInteractionPrompt(context, player, buildings) {
-    for (const building of buildings) {
-        if (building.isAtDoor(player)) {
-            const options = building.locked
-                ? `Press E to unlock (if you have the key).`
-                : `Press E to ${building.doorOpen ? 'close' : 'open'} the door.`;
-
-            // Adjust text position based on the camera's offset
-            const textX = player.position.left - window._camera.offsetX;
-            const textY = player.position.top - window._camera.offsetY + 35;
-
-            context.fillStyle = 'red';
-            context.fillText(options, textX, textY);
-        }
-    }
-}
 
 // NPC target update logic
 setInterval(() => {
@@ -105,6 +109,7 @@ export function RenderWorld() {
     // Update NPC movements, considering collisions with buildings
     window._npcs.forEach(npc => npc.moveTowardTarget(window._buildings));
 }
+setCanvasResolution();
 
 // Game loop
 function gameLoop() {

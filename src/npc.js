@@ -44,13 +44,13 @@ export default class NPC {
     }
 
     render(context) {
-        const { top, left } = this.position;
+        const { top, left, width, height } = this.position;
         context.fillStyle = this.color;
         context.beginPath();
-        context.fillRect(left, top, 20, 20); // Draw as a circle
+        context.fillRect(left, top, width, height); // Draw as a circle
         context.fill();
         context.fillStyle = 'black';
-        context.fillText(this.name, left - 10, top - 25); // Render NPC name above the circle
+        context.fillText(this.name, left - width, top - height); // Render NPC name above the circle
     }
 }
 

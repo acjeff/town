@@ -1,5 +1,7 @@
 import {createObstacles, removeObstacles} from "./obstacleService.js";
 import {createSensor, removeSensor} from "./sensorService.js";
+import {createInteractionOption, removeInteractionOptions} from "./InteractionOptionService.js";
+import {Inventory} from "./data.js";
 
 export default class Building {
     constructor({id, name, owner, keyId, width, height, frontDoorFacing, position, locked = true, doorOpen = false}) {
@@ -15,8 +17,6 @@ export default class Building {
         this.doorOpen = doorOpen;
         this.doorSize = 50;
         this.wallThickness = 10;
-        // Bind interact to ensure `this` refers to the Building instance
-        this.interact = this.interact.bind(this);
     }
 
     render(context) {
@@ -111,32 +111,52 @@ export default class Building {
         // Render building name
         context.fillStyle = 'black';
         context.fillText(this.name, this.position.left + 5, this.position.top - 10);
+        this.isAtDoor();
     }
 
     // Check if the player is at the door
-    isAtDoor(entity) {
+    isAtDoor() {
         let isColliding = false;
-        if (this.sensor && this.sensor.isColliding(entity, this.sensor)) {
+        let interactionOptionsForBuilding = window._interactionOptions.filter(io => io.id.includes(this.id));
+        removeInteractionOptions(interactionOptionsForBuilding);
+        if (this.sensor && this.sensor.isColliding(window._player, this.sensor)) {
             isColliding = true;
+            if (this.locked && Inventory.find(i => i === this.keyId)) {
+                // console.log('Locked and has key');
+                createInteractionOption({
+                    id: this.id + '_unlock_door',
+                    label: 'Unlock door',
+                    callback: () => this.locked = false
+                })
+            }
+            if (!this.locked) {
+                if (!this.doorOpen) {
+                    // console.log('Unlocked and door closed');
+                    createInteractionOption({
+                        id: this.id + '_open_door',
+                        label: 'Open door',
+                        callback: () => this.doorOpen = true
+                    })
+                    if (Inventory.find(i => i === this.keyId)) {
+                        createInteractionOption({
+                            id: this.id + '_lock_door',
+                            label: 'Lock door',
+                            callback: () => {
+                                this.locked = true;
+                            }
+                        })
+                    }
+                } else {
+                    // console.log('Unlocked and door open');
+                    createInteractionOption({
+                        id: this.id + '_close_door',
+                        label: 'Close door',
+                        callback: () => this.doorOpen = false
+                    })
+                }
+            }
         }
         return isColliding;
-    }
-
-    // Interact with the door
-    interact() {
-        console.log('Interact');
-        this.doorOpen = !this.doorOpen;
-        // if (this.locked) {
-        //     if (window._player.inventory.includes(this.keyId)) {
-        //         this.locked = false;
-        //         console.log(`You unlocked ${this.name}!`);
-        //     } else {
-        //         console.log(`${this.name} is locked, and you don't have the key.`);
-        //     }
-        // } else {
-        //     this.doorOpen = !this.doorOpen;
-        //     console.log(`${this.name} door is now ${this.doorOpen ? 'open' : 'closed'}.`);
-        // }
     }
 }
 

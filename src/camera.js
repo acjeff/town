@@ -9,8 +9,8 @@ export default class Camera {
 
     update() {
         // Center the camera on the player
-        this.offsetX = this.player.position.left - this.canvas.width / 2;
-        this.offsetY = this.player.position.top - this.canvas.height / 2;
+        this.offsetX = this.player.position.left - window.innerWidth / 2;
+        this.offsetY = this.player.position.top - window.innerHeight / 2;
     }
 
     draw(entity) {

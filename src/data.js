@@ -138,8 +138,8 @@ export const NPCs = [
         position: {
             top: 500,
             left: 500,
-            width: 20,
-            height: 20
+            width: 15,
+            height: 15
         },
         personality: {
             openness: 50,
@@ -160,8 +160,8 @@ export const NPCs = [
         position: {
             top: 500,
             left: 480,
-            width: 20,
-            height: 20
+            width: 15,
+            height: 15
         },
         personality: {
             openness: 50,
@@ -178,12 +178,12 @@ export const NPCs = [
         home: 'IAN_HOME',
         name: 'Ian',
         health: 100,
-        color: 'Green',
+        color: 'lightpink',
         position: {
             top: 500,
             left: 510,
-            width: 20,
-            height: 20
+            width: 15,
+            height: 15
         },
         personality: {
             openness: 50,
@@ -200,12 +200,12 @@ export const NPCs = [
         home: 'TODD_HOME',
         name: 'Todd',
         health: 100,
-        color: 'blue',
+        color: 'purple',
         position: {
             top: 520,
             left: 500,
-            width: 20,
-            height: 20
+            width: 15,
+            height: 15
         },
         personality: {
             openness: 50,
@@ -219,7 +219,6 @@ export const NPCs = [
     }
 ]
 export const Inventory = ["PLAYER_KEYCARD", 'JESSIE_KEYCARD'];
-
 export const sentientBeings = [NPCs, [{id: 'Player'}]];
 export const Collidables = [Buildings, NPCs, [{id: 'Player'}]];
 export const Everything = [Buildings, NPCs, Items, [{id: 'Player'}]];
