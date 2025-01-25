@@ -45,21 +45,7 @@ function handleMouseMove(evt) {
 
 // Handle click events
 function handleMouseClick(evt) {
-    // Determine the input type (mouse or touch)
-    let mouseX, mouseY;
-
-    if (evt.type === "touchstart") {
-        // For touch events, use the first touch point
-        const touch = evt.touches[0];
-        mouseX = touch.clientX;
-        mouseY = touch.clientY;
-    } else if (evt.type === "mousedown") {
-        // For mouse events, use clientX and clientY directly
-        mouseX = evt.clientX;
-        mouseY = evt.clientY;
-    }
-
-    // Handle hovered item click
+    console.log(evt, ' : event type');
     if (hoveredItemId !== null) {
         console.log('Clicked on list item');
         const clickedItem = window._interactionOptions.find((item) => item.id === hoveredItemId);
@@ -67,44 +53,28 @@ function handleMouseClick(evt) {
     } else {
         console.log('Move to location from click');
         let pos = {
-            mouseX: mouseX,
-            mouseY: mouseY,
+            mouseX: evt.clientX,
+            mouseY: evt.clientY,
             offsetX: window._camera.offsetX,
             offsetY: window._camera.offsetY
         };
-        console.log(pos);
+        console.log(pos)
 
-        // Calculate world coordinates
-        const rect = window._canvas.getBoundingClientRect(); // Get canvas bounding box
-        const scaleX = window._canvas.width / rect.width; // Horizontal scale factor
-        const scaleY = window._canvas.height / rect.height; // Vertical scale factor
+        // Step 1: Get the canvas bounding rectangle
 
-        const canvasX = (mouseX - rect.left) * scaleX; // Adjust for canvas scaling
-        const canvasY = (mouseY - rect.top) * scaleY; // Adjust for canvas scaling
+        let worldY = pos.mouseY + pos.offsetY;
+        let worldX = pos.mouseX + pos.offsetX;
+        // Debug: Draw a red marker at the calculated world coordinates
 
-        const worldX = canvasX + pos.offsetX; // Adjust for camera offset
-        const worldY = canvasY + pos.offsetY; // Adjust for camera offset
-
-        // Debug: Log and draw the target position
-        console.log('World Coordinates:', { worldX, worldY });
-
-        // Optional: Draw a marker at the target position
-        window._context.fillStyle = 'red';
-        window._context.beginPath();
-        window._context.arc(worldX - pos.offsetX, worldY - pos.offsetY, 5, 0, Math.PI * 2);
-        window._context.fill();
-
-        // Set player's target position
+        // Step 5: Set player's target position in world coordinates
         window._player.targetPosition.top = worldY;
         window._player.targetPosition.left = worldX;
+        // window._player.moveFromClick = true;
     }
-
-    // Handle hover detection after the click
     window.setTimeout(() => {
         handleMouseMove(evt);
     }, 100);
 }
-
 
 // Add event listeners
 window.addEventListener("mousemove", handleMouseMove);
