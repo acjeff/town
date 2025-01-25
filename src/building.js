@@ -129,6 +129,14 @@ export default class Building {
                     callback: () => this.locked = false
                 })
             }
+            if (this.locked && !Inventory.find(i => i === this.keyId)) {
+                createInteractionOption({
+                    id: this.id + '_key_required',
+                    label: `Key missing for ${this.name}`,
+                    callback: () => {},
+                    disabled: true
+                })
+            }
             if (!this.locked) {
                 if (!this.doorOpen) {
                     // console.log('Unlocked and door closed');

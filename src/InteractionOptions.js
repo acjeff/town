@@ -37,7 +37,7 @@ function handleMouseMove(evt) {
             mouseX >= item.left &&
             mouseX <= item.left + item.width &&
             mouseY >= item.top &&
-            mouseY <= item.top + item.height
+            mouseY <= item.top + item.height && !item.disabled
     );
 
     hoveredItemId = hoveredItem ? hoveredItem.id : null;
