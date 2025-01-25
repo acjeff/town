@@ -78,3 +78,4 @@ function handleMouseClick(evt) {
 // Add event listeners
 window.addEventListener("mousemove", handleMouseMove);
 window.addEventListener("click", handleMouseClick);
+window.addEventListener("touchstart", handleMouseClick);
