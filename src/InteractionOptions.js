@@ -49,6 +49,26 @@ function handleMouseClick(evt) {
         console.log('Clicked on list item');
         const clickedItem = window._interactionOptions.find((item) => item.id === hoveredItemId);
         clickedItem.callback();
+    } else {
+        console.log('Move to location from click');
+        let pos = {
+            mouseX: evt.clientX,
+            mouseY: evt.clientY,
+            offsetX: window._camera.offsetX,
+            offsetY: window._camera.offsetY
+        };
+        console.log(pos)
+
+        // Step 1: Get the canvas bounding rectangle
+
+        let worldY = pos.mouseY + pos.offsetY;
+        let worldX = pos.mouseX + pos.offsetX;
+        // Debug: Draw a red marker at the calculated world coordinates
+
+        // Step 5: Set player's target position in world coordinates
+        window._player.targetPosition.top = worldY;
+        window._player.targetPosition.left = worldX;
+        // window._player.moveFromClick = true;
     }
     window.setTimeout(() => {
         handleMouseMove(evt);

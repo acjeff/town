@@ -52,6 +52,26 @@ window.addEventListener('keyup', (evt) => {
     }
 });
 
+// window.addEventListener('mousemove', (evt) => {
+//     const rect = window._canvas.getBoundingClientRect();
+//     const mouseX = evt.clientX - rect.left;
+//     const mouseY = evt.clientY - rect.top;
+//     if (window._player.moveFromClick) {
+//         window._player.targetPosition.top = mouseY;
+//         window._player.targetPosition.left = mouseX;
+//     }
+// });
+
+// window.addEventListener('mousedown', (evt) => {
+
+// });
+
+
+
+// window.addEventListener('mouseup', (evt) => {
+//     window._player.moveFromClick = false;
+// });
+
 // Create instances
 const inputHandler = new InputHandler();
 window._player = new Player({
