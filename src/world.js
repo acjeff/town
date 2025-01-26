@@ -8,7 +8,7 @@ import Camera from "./camera.js";
 import {createObstacles} from "./obstacleService.js";
 import Obstacle from "./obstacle.js";
 import manageWorldTimeAndRender from "./worldClock.js";
-const worldSize = 5000;
+const worldSize = 1000;
 window._canvas = document.getElementById("gameCanvas");
 window._context = window._canvas.getContext('2d');
 window._context.font = "12px Arial"; // Set font size to 20px and font family to Arial
@@ -24,11 +24,11 @@ const setCanvasResolution = () => {
 
     const dpr = window.devicePixelRatio || 1;
 
-    canvas.width = worldSize * dpr;
-    canvas.height = worldSize * dpr;
+    canvas.width = window.innerWidth * dpr;
+    canvas.height = window.innerHeight * dpr;
 
-    canvas.style.width = `${worldSize}px`;
-    canvas.style.height = `${worldSize}px`;
+    canvas.style.width = `${window.innerWidth}px`;
+    canvas.style.height = `${window.innerHeight}px`;
 
     context.scale(dpr, dpr);
 };
@@ -121,11 +121,19 @@ export function RenderWorld() {
 
 setCanvasResolution();
 
-// Game loop
-function gameLoop() {
-    RenderWorld();
-    requestAnimationFrame(gameLoop);
+const FPS = 60; // Desired frame rate
+const frameDuration = 1000 / FPS; // Time for each frame in milliseconds
+let lastTime = 0;
+
+function gameLoop(timestamp) {
+    const delta = timestamp - lastTime;
+
+    if (delta >= frameDuration) {
+        lastTime = timestamp; // Update the last time to the current time
+        RenderWorld(); // Call the rendering function
+    }
+
+    requestAnimationFrame(gameLoop); // Continue the loop
 }
 
-// Start the game loop
-gameLoop();
+gameLoop(0); // Start the loop
