@@ -22,7 +22,7 @@ export default class NPC {
         obstacles,
         gridWidth = 100,
         gridHeight = 100,
-        cellSize = 20
+        cellSize = 10
     ) {
         // Create a grid and mark obstacles as non-walkable
         const grid = new PF.Grid(gridWidth, gridHeight);
@@ -42,13 +42,16 @@ export default class NPC {
         });
 
         // Convert start and target positions to grid coordinates
-        const startX = Math.floor(start.left / cellSize);
-        const startY = Math.floor(start.top / cellSize);
+        const startX = Math.floor((start.left + 5) / cellSize);
+        const startY = Math.floor((start.top + 5) / cellSize);
         const targetX = Math.floor(target.left / cellSize);
         const targetY = Math.floor(target.top / cellSize);
 
         // Create a pathfinder
-        const finder = new PF.AStarFinder();
+        const finder = new PF.AStarFinder({
+            allowDiagonal: true,
+            dontCrossCorners: true
+        });
 
         // Find a path
         const path = finder.findPath(startX, startY, targetX, targetY, grid);
@@ -60,8 +63,8 @@ export default class NPC {
 
         // Convert path from grid coordinates back to real coordinates
         const waypoints = path.map(([x, y]) => ({
-            left: x * cellSize + cellSize / 2,
-            top: y * cellSize + cellSize / 2,
+            left: x * cellSize + cellSize / 2 - 5, // Adjust for player's center
+            top: y * cellSize + cellSize / 2 - 5, // Adjust for player's center
         }));
 
         // Draw the grid on a canvas
@@ -79,38 +82,59 @@ export default class NPC {
 
 // Draw the grid on an HTML canvas
     drawGrid(params) {
-        const {grid, path, start, target, cellSize} = params;
+        const { grid, path, start, target, cellSize } = params;
         const ctx = window._context;
 
-        // // Draw the grid
-        // for (let x = 0; x < grid.width; x++) {
-        //     for (let y = 0; y < grid.height; y++) {
-        //         const isWalkable = grid.isWalkableAt(x, y);
-        //         ctx.fillStyle = isWalkable ? "transparent" : "#333";
-        //         ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
-        //         ctx.strokeStyle = "#ccc";
-        //         ctx.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
-        //     }
-        // }
+        // Draw the path as a line running through the center of each square
+        ctx.strokeStyle = "rgba(0,0,0,0.1)";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
 
-        // Highlight the path
-        ctx.fillStyle = "rgba(0,0,0,0.1)";
-        path.forEach(([x, y]) => {
-            ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+        path.forEach(([x, y], index) => {
+            const centerX = x * cellSize + cellSize / 2; // Center of the cell
+            const centerY = y * cellSize + cellSize / 2; // Center of the cell
+
+            if (index === 0) {
+                // Move to the starting point of the path
+                ctx.moveTo(centerX, centerY);
+            } else {
+                // Draw a line to the next point
+                ctx.lineTo(centerX, centerY);
+            }
         });
 
+        ctx.stroke();
+        ctx.setLineDash([]);
         // Draw the start and target points
-        const startX = Math.floor(start.left / cellSize);
-        const startY = Math.floor(start.top / cellSize);
+        const startX = Math.floor((start.left + 5) / cellSize); // Align with center logic
+        const startY = Math.floor((start.top + 5) / cellSize);
         const targetX = Math.floor(target.left / cellSize);
         const targetY = Math.floor(target.top / cellSize);
 
-        // ctx.fillStyle = "green"; // Start point
-        // ctx.fillRect(startX * cellSize, startY * cellSize, cellSize, cellSize);
+        ctx.fillStyle = "rgba(0,0,0,0.1)"; // Start point
+        ctx.beginPath();
+        ctx.arc(
+            startX * cellSize + cellSize / 2,
+            startY * cellSize + cellSize / 2,
+            cellSize / 4, // Radius
+            0,
+            Math.PI * 2
+        );
+        ctx.fill();
 
-        ctx.fillStyle = "rgba(0,0,255,0.1)"; // Target point
-        ctx.fillRect(targetX * cellSize, targetY * cellSize, cellSize, cellSize);
+        ctx.fillStyle = "rgba(10,255,10,0.5)"; // Target point
+        ctx.beginPath();
+        ctx.arc(
+            targetX * cellSize + cellSize / 2,
+            targetY * cellSize + cellSize / 2,
+            cellSize / 4, // Radius
+            0,
+            Math.PI * 2
+        );
+        ctx.fill();
     }
+
 
     moveTowardTarget() {
         const posItem = this.targetPositions[this.targetIndex];
@@ -146,16 +170,17 @@ export default class NPC {
                 } else {
                     this.drawGridValues = null;
                 }
-            } else {
-                window._context.fillStyle = 'white';
-                window._context.strokeStyle = 'lightblue';
-                window._context.beginPath();
-                window._context.arc(posItem.left - window._camera.offsetX, posItem.top - window._camera.offsetY, 5, 0, Math.PI * 2);
-                window._context.moveTo(this.position.left - window._camera.offsetX, this.position.top - window._camera.offsetY); // Move to point A (starting point)
-                window._context.lineTo(posItem.left - window._camera.offsetX, posItem.top - window._camera.offsetY); // Draw a line to point B (ending point)
-                window._context.stroke(); // Render the line
-                window._context.strokeStyle = 'black';
             }
+            // else {
+            //     window._context.fillStyle = 'white';
+            //     window._context.strokeStyle = 'lightblue';
+            //     window._context.beginPath();
+            //     window._context.arc(posItem.left - window._camera.offsetX, posItem.top - window._camera.offsetY, 5, 0, Math.PI * 2);
+            //     window._context.moveTo(this.position.left - window._camera.offsetX, this.position.top - window._camera.offsetY); // Move to point A (starting point)
+            //     window._context.lineTo(posItem.left - window._camera.offsetX, posItem.top - window._camera.offsetY); // Draw a line to point B (ending point)
+            //     window._context.stroke(); // Render the line
+            //     window._context.strokeStyle = 'black';
+            // }
 
             window._context.fill();
         }
