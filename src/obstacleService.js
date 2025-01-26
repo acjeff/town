@@ -1,6 +1,7 @@
 import Obstacle from "./obstacle.js";
 
 export function createObstacle(obstacle) {
+    removeObstacle(obstacle);
     obstacle.id = obstacle.id || Math.random().toString(36).substr(2, 8);
     const _obstacle = new Obstacle(obstacle);
     window._obstacles.push(_obstacle);

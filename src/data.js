@@ -70,7 +70,7 @@ export const Buildings = [
             width: 200,
             height: 200,
         },
-        keyId: 'JESSIE_KEYCARD'
+        keyId: 'TODD_KEYCARD'
     },
     {
         id: 'STEVE_HOME',

@@ -1,6 +1,7 @@
 import InteractionOption from "./interactionOption.js";
 
 export function createInteractionOption(interactionOption) {
+    removeInteractionOption(interactionOption);
     interactionOption.id = interactionOption.id || Math.random().toString(36).substr(2, 8);
     const _interactionOption = new InteractionOption(interactionOption);
     window._interactionOptions.push(_interactionOption);

@@ -29,14 +29,16 @@ export default class NPC {
 
         // Mark obstacle cells as blocked
         obstacles.forEach(obstacle => {
-            const startX = Math.floor(obstacle.left / cellSize);
-            const startY = Math.floor(obstacle.top / cellSize);
-            const endX = Math.floor((obstacle.left + obstacle.width) / cellSize);
-            const endY = Math.floor((obstacle.top + obstacle.height) / cellSize);
+            if (!obstacle.id.includes('door') && obstacle.id !== this.id) {
+                const startX = Math.floor(obstacle.left / cellSize);
+                const startY = Math.floor(obstacle.top / cellSize);
+                const endX = Math.floor((obstacle.left + obstacle.width) / cellSize);
+                const endY = Math.floor((obstacle.top + obstacle.height) / cellSize);
 
-            for (let x = startX; x <= endX; x++) {
-                for (let y = startY; y <= endY; y++) {
-                    grid.setWalkableAt(x, y, false);
+                for (let x = startX; x <= endX; x++) {
+                    for (let y = startY; y <= endY; y++) {
+                        grid.setWalkableAt(x, y, false);
+                    }
                 }
             }
         });
@@ -154,9 +156,11 @@ export default class NPC {
         let canMove = true;
         if (window._obstacles.length) {
             for (const obstacle of window._obstacles) {
-                if (obstacle.isColliding(newPosition, obstacle)) {
-                    canMove = false;
-                    break;
+                if (obstacle.id !== this.id) {
+                    if (obstacle.isColliding(newPosition, obstacle)) {
+                        canMove = false;
+                        break;
+                    }
                 }
             }
         }
@@ -183,6 +187,8 @@ export default class NPC {
             // }
 
             window._context.fill();
+        } else {
+            this.targetPositions = this.generatePath(this.position, this.targetPositions[this.targetPositions.length - 1], window._obstacles);
         }
     }
 
@@ -208,6 +214,11 @@ export default class NPC {
         context.fillText(this.name, left - width, top - height); // Render NPC name above the circle
         if (this.drawGridValues && this.id === 'Player') {
             this.drawGrid(this.drawGridValues);
+        }
+        if (this.id !== 'Player') {
+            window._buildings.forEach(building => {
+                building.isAtDoor(this);
+            });
         }
     }
 }

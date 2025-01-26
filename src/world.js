@@ -5,6 +5,8 @@ import NPC from "./npc.js";
 import Player from "./player.js";
 import InputHandler from "./InputHandler.js";
 import Camera from "./camera.js";
+import {createObstacles} from "./obstacleService.js";
+import Obstacle from "./obstacle.js";
 // Canvas setup
 window._canvas = document.getElementById("gameCanvas");
 window._context = window._canvas.getContext('2d');
@@ -59,13 +61,20 @@ window._player = new Player({
     name: 'Player',
     health: 100,
     color: 'blue',
-    position: {top: 600, left: 600, width: 10, height: 10},
+    position: {top: 450, left: 450, width: 10, height: 10},
     inventory: Inventory
 });
 const camera = new Camera(window._canvas, window._player);
 window._camera = camera;
 window._buildings = Buildings.map(building => new Building(building));
 window._npcs = NPCs.map(npc => new NPC(npc));
+createObstacles(window._npcs.map(npc => new Obstacle({
+    id: npc.id,
+    top: npc.position.top,
+    left: npc.position.left,
+    width: 10,
+    height: 10
+})));
 
 // NPC target update logic
 setTimeout(() => {
@@ -77,13 +86,15 @@ setTimeout(() => {
         });
     });
 }, 5000); // Update every 3 seconds
-window._npcs.forEach(npc => {
-    // const homeBuilding = window._buildings.find(b => b.id === npc.home);
-    npc.setTarget({
-        top: Math.random() * window._canvas.height,
-        left: Math.random() * window._canvas.width,
+setTimeout(() => {
+    window._npcs.forEach(npc => {
+        const homeBuilding = window._buildings[Math.floor(Math.random() * window._buildings.length)];
+        npc.setTarget({
+            top: homeBuilding.position.top + homeBuilding.height / 2,
+            left: homeBuilding.position.left + homeBuilding.width / 2
+        });
     });
-});
+}, 100)
 
 // Main render loop
 export function RenderWorld() {

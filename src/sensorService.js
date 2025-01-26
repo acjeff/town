@@ -1,6 +1,7 @@
 import Sensor from "./sensor.js";
 
 export function createSensor(sensor) {
+    removeSensor(sensor);
     sensor.id = sensor.id || Math.random().toString(36).substr(2, 8);
     const _sensor = new Sensor(sensor);
     window._sensors.push(_sensor);

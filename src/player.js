@@ -53,6 +53,7 @@ export default class Player extends NPC {
         }
         // }
         this.moveTowardTarget();
+
         // }
     }
 
