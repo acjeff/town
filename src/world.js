@@ -108,7 +108,7 @@ export function RenderWorld() {
             obstacle.left = npcObstacle.position.left;
         }
     });
-    // manageWorldTimeAndRender(window._canvas)
+    manageWorldTimeAndRender(window._canvas)
 
     camera.context.restore();
     renderInteractionPrompt(window._context, window._player, window._buildings);

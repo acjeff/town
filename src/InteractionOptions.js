@@ -35,9 +35,18 @@ export function renderInteractionPrompt() {
         );
         context.font = "10px Arial"; // Set font size to 20px and font family to Arial
     });
+    context.fillText(
+        `${window._world_percentage_through_day}% through day`,
+        20,
+        20
+    );
+    context.fillText(
+        `${window._formattedTime}`,
+        20,
+        40
+    );
 
 }
-
 
 // Check if the mouse is over an item
 function handleMouseMove(evt) {
