@@ -92,13 +92,10 @@ export function RenderWorld() {
     camera.context.scale(camera.zoom, camera.zoom); // Apply zoom
     camera.context.translate(-camera.offsetX, -camera.offsetY); // Translate based on camera offset
 
+
     window._buildings.forEach(building => building.render(window._context));
     window._npcs.forEach(npc => npc.render(window._context));
     window._player.render(window._context);
-    renderInteractionPrompt(window._context, window._player, window._buildings);
-
-    camera.context.restore();
-
     window._npcs.forEach(npc => npc.moveTowardTarget(window._buildings));
     createObstacles(window._npcs.map(npc => new Obstacle({
         id: npc.id,
@@ -107,6 +104,9 @@ export function RenderWorld() {
         width: 10,
         height: 10
     })));
+
+    camera.context.restore();
+    renderInteractionPrompt(window._context, window._player, window._buildings);
 }
 
 setCanvasResolution();
