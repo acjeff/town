@@ -8,7 +8,6 @@ import Camera from "./camera.js";
 import {createObstacles} from "./obstacleService.js";
 import Obstacle from "./obstacle.js";
 import manageWorldTimeAndRender from "./worldClock.js";
-const worldSize = 1000;
 window._canvas = document.getElementById("gameCanvas");
 window._context = window._canvas.getContext('2d');
 window._context.font = "12px Arial"; // Set font size to 20px and font family to Arial
@@ -70,16 +69,16 @@ setTimeout(() => {
             left: homeBuilding.position.left + homeBuilding.position.width / 2
         });
     });
-}, 5000);
-setTimeout(() => {
-    window._npcs.forEach(npc => {
-        const homeBuilding = window._buildings[Math.floor(Math.random() * window._buildings.length)];
-        npc.setTarget({
-            top: homeBuilding.position.top + homeBuilding.position.height / 2,
-            left: homeBuilding.position.left + homeBuilding.position.width / 2
-        });
-    });
 }, 100);
+// setTimeout(() => {
+//     window._npcs.forEach(npc => {
+//         const homeBuilding = window._buildings[Math.floor(Math.random() * window._buildings.length)];
+//         npc.setTarget({
+//             top: homeBuilding.position.top + homeBuilding.position.height / 2,
+//             left: homeBuilding.position.left + homeBuilding.position.width / 2
+//         });
+//     });
+// }, 100);
 
 if (!window._obstacles.length) {
     window._obstacles = window._npcs.map(npc => new Obstacle({
@@ -93,12 +92,7 @@ if (!window._obstacles.length) {
 
 export function RenderWorld() {
     camera.context.clearRect(0, 0, camera.canvas.width, camera.canvas.height);
-    camera.context.font = "10px Arial"; // Set font size to 20px and font family to Arial
-
-    window._player.move(inputHandler, window._buildings);
-
     camera.update();
-
     camera.context.save(); // Save the current context state
     camera.context.scale(camera.zoom, camera.zoom); // Apply zoom
     camera.context.translate(-camera.offsetX, -camera.offsetY); // Translate based on camera offset
@@ -106,7 +100,8 @@ export function RenderWorld() {
     window._npcs.forEach(npc => npc.render(window._context));
     window._player.render(window._context);
     window._npcs.forEach(npc => npc.moveTowardTarget(window._buildings));
-    window._obstacles.forEach((obstacle, index) => {
+    window._player.move(inputHandler, window._buildings);
+    window._obstacles.forEach((obstacle) => {
         let npcObstacle = window._npcs.find(npc => npc.id === obstacle.id);
         if (npcObstacle) {
             obstacle.top = npcObstacle.position.top;

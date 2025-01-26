@@ -132,8 +132,8 @@ export const NPCs = [
         health: 100,
         color: 'orange',
         position: {
-            top: 500,
-            left: 500,
+            top: 505,
+            left: 505,
         },
         personality: {
             openness: 50,
@@ -152,8 +152,8 @@ export const NPCs = [
         health: 100,
         color: 'limegreen',
         position: {
-            top: 500,
-            left: 480,
+            top: 515,
+            left: 485,
         },
         personality: {
             openness: 50,
@@ -172,8 +172,8 @@ export const NPCs = [
         health: 100,
         color: 'lightpink',
         position: {
-            top: 500,
-            left: 510,
+            top: 545,
+            left: 515
         },
         personality: {
             openness: 50,
@@ -192,8 +192,8 @@ export const NPCs = [
         health: 100,
         color: 'purple',
         position: {
-            top: 520,
-            left: 500,
+            top: 525,
+            left: 505,
         },
         personality: {
             openness: 50,

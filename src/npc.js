@@ -14,15 +14,18 @@ export default class NPC {
         this.targetPositions = [];
         this.position.width = position.width || 10;
         this.position.height = position.height || 10;
+        this.retryInterval = null;
+        this.lineDashOffset = 0
+        // this.startPathfinding();
     }
 
     generatePath(
         start,
         target,
         obstacles,
-        gridWidth = window._canvas.width / 10,
-        gridHeight = window._canvas.width / 10,
-        cellSize = 10
+        gridWidth = Math.ceil(window._canvas.width / 20),
+        gridHeight = Math.ceil(window._canvas.height / 20),
+        cellSize = 20
     ) {
         // Create a grid and mark obstacles as non-walkable
         const grid = new PF.Grid(gridWidth, gridHeight);
@@ -50,7 +53,7 @@ export default class NPC {
         const targetY = Math.floor(target.top / cellSize);
 
         // Create a pathfinder
-        const finder = new PF.AStarFinder({
+        const finder = new PF.BestFirstFinder({
             allowDiagonal: true,
             dontCrossCorners: true
         });
@@ -82,20 +85,43 @@ export default class NPC {
         return waypoints;
     }
 
-// Draw the grid on an HTML canvas
+// Draw the grid on an HTML canva
+
     drawGrid(params) {
-        const { grid, path, start, target, cellSize } = params;
+        const {grid, path, start, target, cellSize} = params;
         const ctx = window._context;
 
-        // Draw the path as a line running through the center of each square
-        ctx.strokeStyle = "rgba(0,0,0,0.1)";
+        // Set canvas dimensions
+        const canvasWidth = window._canvas.width;
+        const canvasHeight = window._canvas.height;
+
+        // Draw the grid in light grey (optional, uncomment if needed)
+        // ctx.strokeStyle = "rgba(200, 200, 200, 0.3)"; // Light grey color
+        // ctx.lineWidth = 1;
+        //
+        // for (let x = 0; x <= canvasWidth; x += cellSize) {
+        //     ctx.beginPath();
+        //     ctx.moveTo(x, 0);
+        //     ctx.lineTo(x, canvasHeight);
+        //     ctx.stroke();
+        // }
+        //
+        // for (let y = 0; y <= canvasHeight; y += cellSize) {
+        //     ctx.beginPath();
+        //     ctx.moveTo(0, y);
+        //     ctx.lineTo(canvasWidth, y);
+        //     ctx.stroke();
+        // }
+
+        // Simulate moving dashed line for the path
+        ctx.strokeStyle = this.color;
         ctx.lineWidth = 2;
-        let lineDash = Math.floor(Math.random() * 10);
-        ctx.setLineDash([lineDash, lineDash]);
+        ctx.setLineDash([5, 5]); // Dash pattern: [dash length, gap length]
+        ctx.lineDashOffset = this.lineDashOffset; // Apply animated offset
         ctx.beginPath();
 
         path.forEach(([x, y], index) => {
-            if (index > this.targetIndex) {
+            if (index > this.targetIndex - 1) {
                 const centerX = x * cellSize + cellSize / 2; // Center of the cell
                 const centerY = y * cellSize + cellSize / 2; // Center of the cell
 
@@ -110,20 +136,22 @@ export default class NPC {
         });
 
         ctx.stroke();
-        ctx.setLineDash([]);
+        ctx.setLineDash([]); // Reset dash style
+
         // Draw the start and target points
         const targetX = Math.floor(target.left / cellSize);
         const targetY = Math.floor(target.top / cellSize);
-        ctx.fillStyle = "grey"; // Target point
+        ctx.fillStyle = this.color; // Target point
         ctx.beginPath();
         ctx.arc(
             targetX * cellSize + cellSize / 2,
             targetY * cellSize + cellSize / 2,
-            cellSize / 4, // Radius
+            cellSize / 6, // Radius
             0,
             Math.PI * 2
         );
         ctx.fill();
+        ctx.strokeStyle = 'black';
     }
 
 
@@ -154,32 +182,35 @@ export default class NPC {
             }
         }
 
+        this.canMove = canMove;
+
         if (canMove) {
-            this.position = newPosition;
             if (Math.floor(posItem.top) === Math.floor(this.position.top) && Math.floor(posItem.left) === Math.floor(this.position.left)) {
                 let newTarget = this.targetPositions[this.targetIndex + 1];
                 if (newTarget !== undefined) {
                     this.targetIndex++;
                 } else {
                     this.drawGridValues = null;
+                    this.targetPositions = [];
                 }
             }
-            // else {
-            //     window._context.fillStyle = 'white';
-            //     window._context.strokeStyle = 'lightblue';
-            //     window._context.beginPath();
-            //     window._context.arc(posItem.left - window._camera.offsetX, posItem.top - window._camera.offsetY, 5, 0, Math.PI * 2);
-            //     window._context.moveTo(this.position.left - window._camera.offsetX, this.position.top - window._camera.offsetY); // Move to point A (starting point)
-            //     window._context.lineTo(posItem.left - window._camera.offsetX, posItem.top - window._camera.offsetY); // Draw a line to point B (ending point)
-            //     window._context.stroke(); // Render the line
-            //     window._context.strokeStyle = 'black';
-            // }
-
             window._context.fill();
-        } else {
-            // this.targetPositions = this.generatePath(this.position, this.targetPositions[this.targetPositions.length - 1], window._obstacles);
+            this.position = newPosition;
         }
     }
+
+    // startPathfinding() {
+    //     setInterval(() => {
+    //         // Check if a valid path already exists
+    //         if (!this.targetPositions.length || !this.canMove) {
+    //             return;
+    //         }
+    //
+    //         // Attempt to generate a path
+    //         console.log('Find a new path');
+    //         this.generatePath(this.position, this.targetPositions[this.targetPositions.length - 1], window._obstacles);
+    //     }, 2000); // Retry every 2 seconds (adjust as needed)
+    // }
 
     setTarget(newTarget) {
         // Find path to new target and generate targetPositions array
@@ -201,7 +232,10 @@ export default class NPC {
         context.fill();
         context.fillStyle = 'black';
         context.fillText(this.name, left - width, top - height); // Render NPC name above the circle
-        if (this.drawGridValues && this.id === 'Player') {
+        // if (this.drawGridValues && this.id === 'Player') {
+        if (this.drawGridValues) {
+            this.lineDashOffset -= 1; // Decrement to simulate pulling effect
+            if (this.lineDashOffset < -20) this.lineDashOffset = 0; // Reset for smooth looping
             this.drawGrid(this.drawGridValues);
         }
         if (this.id !== 'Player') {
