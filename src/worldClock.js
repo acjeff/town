@@ -17,7 +17,7 @@ setInterval(() => {
     if (window._world_time >= dayLength) {
         window._world_time = 0;
     } else {
-        window._world_time = Math.floor(window._world_time + 500);
+        window._world_time = Math.floor(window._world_time + 1000);
     }
     window._world_percentage_through_day = Math.ceil((window._world_time / dayLength) * 100);
     window._formattedTime = secondsToTimeFormat(window._world_time);
