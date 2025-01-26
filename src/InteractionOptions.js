@@ -4,24 +4,38 @@ export function renderInteractionPrompt() {
     const context = window._context;
     window._interactionOptions.forEach((item, index) => {
         const isHovered = item.id === hoveredItemId;
-        item.top = window._player.position.top - window._camera.offsetY + (item.height * index);
-        item.left = window._player.position.left - window._camera.offsetX + window._player.position.width + 10;
-        let top = item.top;
-        let left = item.left;
-        context.fillStyle = isHovered ? "black" : "white"; // Background
+
+        // Calculate the fixed bottom-middle position for each option
+        const bottomPadding = 50; // Distance from the bottom of the screen
+        const centerX = window.innerWidth - item.width; // Horizontal center of the screen
+        const itemSpacing = 10; // Spacing between items
+
+        // Determine the top and left position for the option
+        const top = window.innerHeight - bottomPadding - ((window._interactionOptions.length - index) * (item.height + itemSpacing));
+        const left = centerX - item.width / 2;
+
+        // Set the item's position (for future logic if needed)
+        item.top = top;
+        item.left = left;
+
+        // Render the option at the calculated position
+        context.fillStyle = isHovered ? "white" : "black"; // Background
         context.fillRect(left, top, item.width, item.height);
-        context.fillStyle = isHovered ? "white" : "black"; // Text
+        context.font = "20px Arial"; // Set font size to 20px and font family to Arial
+        context.fillStyle = isHovered ? "black" : "white"; // Text
+
         context.strokeRect(left, top, item.width, item.height);
-        // context.font = "20px Arial";
-        // context.textAlign = "center";
         context.textBaseline = "middle";
 
+        // Draw the label text inside the option
         context.fillText(
             item.label,
-            item.left + 15,
-            item.top + 15
+            left + 15, // Center the text horizontally
+            top + item.height / 2 // Center the text vertically
         );
+        context.font = "10px Arial"; // Set font size to 20px and font family to Arial
     });
+
 }
 
 
@@ -57,9 +71,9 @@ function handleMouseClick(evt) {
         };
 
         // Step 1: Get the canvas bounding rectangle
-
-        let worldY = pos.mouseY + pos.offsetY;
-        let worldX = pos.mouseX + pos.offsetX;
+        let worldXY = window._camera.screenToWorld(pos.mouseX, pos.mouseY);
+        let worldY = worldXY.top;
+        let worldX = worldXY.left;
         // Debug: Draw a red marker at the calculated world coordinates
 
         // Step 5: Set player's target position in world coordinates

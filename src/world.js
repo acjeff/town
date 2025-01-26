@@ -7,18 +7,13 @@ import InputHandler from "./InputHandler.js";
 import Camera from "./camera.js";
 import {createObstacles} from "./obstacleService.js";
 import Obstacle from "./obstacle.js";
-// Canvas setup
+const worldSize = 10000;
 window._canvas = document.getElementById("gameCanvas");
 window._context = window._canvas.getContext('2d');
-// Canvas setup
-
+window._context.font = "12px Arial"; // Set font size to 20px and font family to Arial
 window._obstacles = [];
 window._sensors = [];
 window._interactionOptions = [];
-window._canvas.width = window.innerWidth;
-window._canvas.height = window.innerHeight;
-window._context.fillStyle = "lightblue";
-window._context.fillRect(0, 0, window._canvas.width, window._canvas.height);
 
 let keyPressed = false;
 
@@ -26,18 +21,14 @@ const setCanvasResolution = () => {
     const canvas = window._canvas;
     const context = window._context;
 
-    // Get device pixel ratio
     const dpr = window.devicePixelRatio || 1;
 
-    // Adjust canvas size for high-resolution rendering
-    canvas.width = window.innerWidth * dpr;
-    canvas.height = window.innerHeight * dpr;
+    canvas.width = worldSize * dpr;
+    canvas.height = worldSize * dpr;
 
-    // Scale the canvas back to the intended display size
-    canvas.style.width = `${window.innerWidth}px`;
-    canvas.style.height = `${window.innerHeight}px`;
+    canvas.style.width = `${worldSize}px`;
+    canvas.style.height = `${worldSize}px`;
 
-    // Scale the rendering context to match the device pixel ratio
     context.scale(dpr, dpr);
 };
 
@@ -64,65 +55,58 @@ window._player = new Player({
     position: {top: 450, left: 450, width: 10, height: 10},
     inventory: Inventory
 });
+
 const camera = new Camera(window._canvas, window._player);
 window._camera = camera;
 window._buildings = Buildings.map(building => new Building(building));
 window._npcs = NPCs.map(npc => new NPC(npc));
-createObstacles(window._npcs.map(npc => new Obstacle({
-    id: npc.id,
-    top: npc.position.top,
-    left: npc.position.left,
-    width: 10,
-    height: 10
-})));
 
-// NPC target update logic
 setTimeout(() => {
     window._npcs.forEach(npc => {
         const homeBuilding = window._buildings.find(b => b.id === npc.home);
         npc.setTarget({
-            top: homeBuilding.position.top + homeBuilding.height / 2,
-            left: homeBuilding.position.left + homeBuilding.width / 2
+            top: homeBuilding.position.top + homeBuilding.position.height / 2,
+            left: homeBuilding.position.left + homeBuilding.position.width / 2
         });
     });
-}, 5000); // Update every 3 seconds
+}, 5000);
 setTimeout(() => {
     window._npcs.forEach(npc => {
         const homeBuilding = window._buildings[Math.floor(Math.random() * window._buildings.length)];
         npc.setTarget({
-            top: homeBuilding.position.top + homeBuilding.height / 2,
-            left: homeBuilding.position.left + homeBuilding.width / 2
+            top: homeBuilding.position.top + homeBuilding.position.height / 2,
+            left: homeBuilding.position.left + homeBuilding.position.width / 2
         });
     });
-}, 100)
+}, 100);
 
-// Main render loop
 export function RenderWorld() {
-    // Clear the canvas
     camera.context.clearRect(0, 0, camera.canvas.width, camera.canvas.height);
+    camera.context.font = "10px Arial"; // Set font size to 20px and font family to Arial
 
-    // Update player movement and check for collisions
     window._player.move(inputHandler, window._buildings);
 
-    // Update camera position
     camera.update();
 
     camera.context.save(); // Save the current context state
+    camera.context.scale(camera.zoom, camera.zoom); // Apply zoom
     camera.context.translate(-camera.offsetX, -camera.offsetY); // Translate based on camera offset
 
-    // Render all entities
     window._buildings.forEach(building => building.render(window._context));
     window._npcs.forEach(npc => npc.render(window._context));
     window._player.render(window._context);
-
-    // Restore context to prevent affecting other renders
-    camera.context.restore();
-
-    // Show interaction prompts
     renderInteractionPrompt(window._context, window._player, window._buildings);
 
-    // Update NPC movements, considering collisions with buildings
+    camera.context.restore();
+
     window._npcs.forEach(npc => npc.moveTowardTarget(window._buildings));
+    createObstacles(window._npcs.map(npc => new Obstacle({
+        id: npc.id,
+        top: npc.position.top,
+        left: npc.position.left,
+        width: 10,
+        height: 10
+    })));
 }
 
 setCanvasResolution();

@@ -1,5 +1,5 @@
 export default class InteractionOption {
-    constructor({id, callback, label, width = 200, height = 30, top, left, disabled = false}) {
+    constructor({id, callback, label, width = 400, height = 50, top, left, disabled = false}) {
         this.id = id;
         this.callback = callback;
         this.label = label;

@@ -20,8 +20,8 @@ export default class NPC {
         start,
         target,
         obstacles,
-        gridWidth = 100,
-        gridHeight = 100,
+        gridWidth = window._canvas.width / 10,
+        gridHeight = window._canvas.width / 10,
         cellSize = 10
     ) {
         // Create a grid and mark obstacles as non-walkable
@@ -90,42 +90,31 @@ export default class NPC {
         // Draw the path as a line running through the center of each square
         ctx.strokeStyle = "rgba(0,0,0,0.1)";
         ctx.lineWidth = 2;
-        ctx.setLineDash([5, 5]);
+        let lineDash = Math.floor(Math.random() * 10);
+        ctx.setLineDash([lineDash, lineDash]);
         ctx.beginPath();
 
         path.forEach(([x, y], index) => {
-            const centerX = x * cellSize + cellSize / 2; // Center of the cell
-            const centerY = y * cellSize + cellSize / 2; // Center of the cell
+            if (index > this.targetIndex) {
+                const centerX = x * cellSize + cellSize / 2; // Center of the cell
+                const centerY = y * cellSize + cellSize / 2; // Center of the cell
 
-            if (index === 0) {
-                // Move to the starting point of the path
-                ctx.moveTo(centerX, centerY);
-            } else {
-                // Draw a line to the next point
-                ctx.lineTo(centerX, centerY);
+                if (index === 0) {
+                    // Move to the starting point of the path
+                    ctx.moveTo(centerX, centerY);
+                } else {
+                    // Draw a line to the next point
+                    ctx.lineTo(centerX, centerY);
+                }
             }
         });
 
         ctx.stroke();
         ctx.setLineDash([]);
         // Draw the start and target points
-        const startX = Math.floor((start.left + 5) / cellSize); // Align with center logic
-        const startY = Math.floor((start.top + 5) / cellSize);
         const targetX = Math.floor(target.left / cellSize);
         const targetY = Math.floor(target.top / cellSize);
-
-        ctx.fillStyle = "rgba(0,0,0,0.1)"; // Start point
-        ctx.beginPath();
-        ctx.arc(
-            startX * cellSize + cellSize / 2,
-            startY * cellSize + cellSize / 2,
-            cellSize / 4, // Radius
-            0,
-            Math.PI * 2
-        );
-        ctx.fill();
-
-        ctx.fillStyle = "rgba(10,255,10,0.5)"; // Target point
+        ctx.fillStyle = "grey"; // Target point
         ctx.beginPath();
         ctx.arc(
             targetX * cellSize + cellSize / 2,
@@ -188,7 +177,7 @@ export default class NPC {
 
             window._context.fill();
         } else {
-            this.targetPositions = this.generatePath(this.position, this.targetPositions[this.targetPositions.length - 1], window._obstacles);
+            // this.targetPositions = this.generatePath(this.position, this.targetPositions[this.targetPositions.length - 1], window._obstacles);
         }
     }
 

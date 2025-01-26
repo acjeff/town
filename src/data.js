@@ -47,8 +47,6 @@ export const Buildings = [
         name: `Jessie's Home`,
         owner: 'JESSIE',
         keyId: 'JESSIE_KEYCARD',
-        width: 200,
-        height: 200,
         frontDoorFacing: 'north',
         position: {
             top: 100,
@@ -61,8 +59,6 @@ export const Buildings = [
         id: 'TODD_HOME',
         name: `Todd's Home`,
         owner: 'TODD',
-        width: 200,
-        height: 200,
         frontDoorFacing: 'south',
         position: {
             top: 350,
@@ -76,8 +72,6 @@ export const Buildings = [
         id: 'STEVE_HOME',
         name: `Steve's Home`,
         owner: 'STEVE',
-        width: 200,
-        height: 200,
         frontDoorFacing: 'east',
         position: {
             top: 600,
@@ -91,8 +85,6 @@ export const Buildings = [
         id: 'IAN_HOME',
         name: `Ian's Home`,
         owner: 'IAN',
-        width: 200,
-        height: 400,
         frontDoorFacing: 'west',
         position: {
             top: 100,
@@ -106,14 +98,26 @@ export const Buildings = [
         id: 'PLAYER_HOME',
         name: `Your Home`,
         owner: 'PLAYER',
-        width: 200,
-        height: 200,
         frontDoorFacing: 'west',
         position: {
             top: 600,
             left: 700,
             width: 200,
             height: 200
+        },
+        keyId: 'PLAYER_KEYCARD',
+        locked: false,
+        doorOpen: true
+    },
+    {
+        id: 'SUPER_MARKET',
+        name: `Super market`,
+        frontDoorFacing: 'west',
+        position: {
+            top: 100,
+            left: 1200,
+            width: 300,
+            height: 800,
         },
         keyId: 'PLAYER_KEYCARD',
         locked: false,

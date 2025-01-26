@@ -4,15 +4,15 @@ import {createInteractionOption, removeInteractionOptions} from "./InteractionOp
 import {Inventory} from "./data.js";
 
 export default class Building {
-    constructor({id, name, owner, keyId, width, height, frontDoorFacing, position, locked = true, doorOpen = false}) {
+    constructor({id, name, owner, keyId, frontDoorFacing, position, locked = true, doorOpen = false}) {
         this.id = id;
         this.name = name;
         this.owner = owner;
         this.keyId = keyId;
-        this.width = width;
-        this.height = height;
         this.frontDoorFacing = frontDoorFacing;
         this.position = position;
+        this.width = position.width;
+        this.height = position.height;
         this.locked = locked;
         this.doorOpen = doorOpen;
         this.doorSize = 50;
@@ -131,7 +131,8 @@ export default class Building {
                     createInteractionOption({
                         id: this.id + '_unlock_door',
                         label: 'Unlock door',
-                        callback: () => this.locked = false
+                        callback: () => this.locked = false,
+                        width: 200
                     })
                 } else {
                     this.locked = false;
@@ -156,7 +157,8 @@ export default class Building {
                         createInteractionOption({
                             id: this.id + '_open_door',
                             label: 'Open door',
-                            callback: () => this.doorOpen = true
+                            callback: () => this.doorOpen = true,
+                            width: 200
                         })
                     } else {
                         this.doorOpen = true;
@@ -168,7 +170,8 @@ export default class Building {
                                 label: 'Lock door',
                                 callback: () => {
                                     this.locked = true;
-                                }
+                                },
+                                width: 200
                             })
                         }
                     }
@@ -178,7 +181,8 @@ export default class Building {
                         createInteractionOption({
                             id: this.id + '_close_door',
                             label: 'Close door',
-                            callback: () => this.doorOpen = false
+                            callback: () => this.doorOpen = false,
+                            width: 200
                         })
                     }
                 }
