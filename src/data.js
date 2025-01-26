@@ -142,6 +142,26 @@ export const NPCs = [
             agreeableness: 50,
             neuroticism: 50
         },
+        schedule: [
+            {
+                id: 'JESSIE_WORK',
+                startHour: 8,
+                endHour: 17,
+                locationId: 'SUPER_MARKET'
+            },
+            {
+                id: "JESSIE_CHILL_TIME",
+                startHour: 17,
+                endHour: 22,
+                locationId: 'PLAYER_HOME'
+            },
+            {
+                id: "JESSIE_HOME_TIME",
+                startHour: 22,
+                endHour: 8,
+                locationId: 'JESSIE_HOME'
+            }
+        ],
         inventory: ['CHOCOLATE_BAR', 'JESSIE_KEYCARD']
 
     },
@@ -162,7 +182,27 @@ export const NPCs = [
             agreeableness: 50,
             neuroticism: 50
         },
-        inventory: ['STEVE_KEYCARD']
+        inventory: ['STEVE_KEYCARD'],
+        schedule: [
+            {
+                id: 'STEVE_WORK',
+                startHour: 6,
+                endHour: 15,
+                locationId: 'SUPER_MARKET'
+            },
+            {
+                id: "STEVE_CHILL_TIME",
+                startHour: 15,
+                endHour: 19,
+                locationId: 'IAN_HOME'
+            },
+            {
+                id: "STEVE_HOME_TIME",
+                startHour: 19,
+                endHour: 6,
+                locationId: 'STEVE_HOME'
+            }
+        ]
 
     },
     {
@@ -182,7 +222,27 @@ export const NPCs = [
             agreeableness: 50,
             neuroticism: 50
         },
-        inventory: ['IAN_KEYCARD']
+        inventory: ['IAN_KEYCARD'],
+        schedule: [
+            {
+                id: 'IAN_WORK',
+                startHour: 10,
+                endHour: 15,
+                locationId: 'SUPER_MARKET'
+            },
+            {
+                id: "IAN_CHILL_TIME",
+                startHour: 15,
+                endHour: 18,
+                locationId: 'JESSIE_HOME'
+            },
+            {
+                id: "IAN_HOME_TIME",
+                startHour: 18,
+                endHour: 10,
+                locationId: 'IAN_HOME'
+            }
+        ]
 
     },
     {
@@ -202,7 +262,21 @@ export const NPCs = [
             agreeableness: 50,
             neuroticism: 50
         },
-        inventory: ['TODD_KEYCARD']
+        inventory: ['TODD_KEYCARD'],
+        schedule: [
+            {
+                id: 'TODD_WORK',
+                startHour: 10,
+                endHour: 15,
+                locationId: 'SUPER_MARKET'
+            },
+            {
+                id: "TODD_HOME_TIME",
+                startHour: 18,
+                endHour: 10,
+                locationId: 'IAN_HOME'
+            }
+        ]
 
     }
 ]

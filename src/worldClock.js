@@ -16,7 +16,7 @@ setInterval(() => {
     } else {
         window._world_time = Math.floor(window._world_time + 16);
     }
-    window._world_hours = Math.round(window._world_time / 3600);
+    window._world_hours = window._world_time / 3600;
     window._world_percentage_through_day = Math.ceil((window._world_time / dayLength) * 100);
     window._formattedTime = secondsToTimeFormat(window._world_time);
 }, 16);
@@ -30,7 +30,7 @@ export default function manageWorldTimeAndRender(canvas) {
     }
 
     const colors = {
-        dawn: "#FFCC33", // Dawn color
+        dawn: "#ef951f", // Dawn color
         midday: "#87CEEB", // Midday color
         dusk: "#5e2f11", // Dusk color
         midnight: "#000000" // Midnight color

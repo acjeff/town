@@ -8,6 +8,7 @@ import Camera from "./camera.js";
 import {createObstacles} from "./obstacleService.js";
 import Obstacle from "./obstacle.js";
 import manageWorldTimeAndRender from "./worldClock.js";
+
 window._canvas = document.getElementById("gameCanvas");
 window._context = window._canvas.getContext('2d');
 window._context.font = "12px Arial"; // Set font size to 20px and font family to Arial
@@ -61,15 +62,15 @@ window._camera = camera;
 window._buildings = Buildings.map(building => new Building(building));
 window._npcs = NPCs.map(npc => new NPC(npc));
 
-setTimeout(() => {
-    window._npcs.forEach(npc => {
-        const homeBuilding = window._buildings.find(b => b.id === npc.home);
-        npc.setTarget({
-            top: homeBuilding.position.top + homeBuilding.position.height / 2,
-            left: homeBuilding.position.left + homeBuilding.position.width / 2
-        });
-    });
-}, 100);
+// setTimeout(() => {
+//     window._npcs.forEach(npc => {
+//         const homeBuilding = window._buildings.find(b => b.id === npc.home);
+//         npc.setTarget({
+//             top: homeBuilding.position.top + homeBuilding.position.height / 2,
+//             left: homeBuilding.position.left + homeBuilding.position.width / 2
+//         });
+//     });
+// }, 100);
 // setTimeout(() => {
 //     window._npcs.forEach(npc => {
 //         const homeBuilding = window._buildings[Math.floor(Math.random() * window._buildings.length)];
@@ -99,7 +100,13 @@ export function RenderWorld() {
     window._buildings.forEach(building => building.render(window._context));
     window._npcs.forEach(npc => npc.render(window._context));
     window._player.render(window._context);
-    window._npcs.forEach(npc => npc.moveTowardTarget(window._buildings));
+    window._npcs.forEach(npc => {
+        if (npc.schedule) {
+            const currentHour = window._world_hours;
+            npc.setLocationBasedOnSchedule(currentHour);
+        }
+        npc.moveTowardTarget(window._buildings)
+    });
     window._player.move(inputHandler, window._buildings);
     window._obstacles.forEach((obstacle) => {
         let npcObstacle = window._npcs.find(npc => npc.id === obstacle.id);

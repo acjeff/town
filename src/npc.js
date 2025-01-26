@@ -1,5 +1,5 @@
 export default class NPC {
-    constructor({id, name, health, color, position, personality, inventory, home, targetPositions}) {
+    constructor({id, name, health, color, position, personality, inventory, home, schedule}) {
         this.id = id;
         this.name = name;
         this.health = health;
@@ -14,10 +14,70 @@ export default class NPC {
         this.targetPositions = [];
         this.position.width = position.width || 10;
         this.position.height = position.height || 10;
-        this.retryInterval = null;
+        this.schedule = schedule;
         this.lineDashOffset = 0
-        // this.startPathfinding();
     }
+
+    startPause(callback, pauseDuration = 2000) {
+        this.isPaused = true; // Prevent new targets from being set
+        setTimeout(() => {
+            this.isPaused = false; // Allow new movement after the pause
+            callback(); // Execute the callback (e.g., set a new target)
+        }, pauseDuration); // Pause duration in milliseconds
+    }
+
+    wanderWithinBuilding(building) {
+        const randomTarget = {
+            top: building.position.top + Math.random() * building.position.height,
+            left: building.position.left + Math.random() * building.position.width
+        };
+        this.setTarget(randomTarget);
+    }
+
+    randomWander() {
+        const randomTarget = {
+            top: Math.random() * window._canvas.height,
+            left: Math.random() * window._canvas.width
+        };
+        this.setTarget(randomTarget);
+    }
+
+    setLocationBasedOnSchedule(currentHour) {
+        // Find the active schedule entry for the given hour
+        const activeSchedule = this.schedule.find(schedule => {
+            if (schedule.startHour < schedule.endHour) {
+                return currentHour >= schedule.startHour && currentHour < schedule.endHour;
+            } else {
+                return currentHour >= schedule.startHour || currentHour < schedule.endHour;
+            }
+        });
+
+        if (activeSchedule) {
+            // If the NPC has a schedule for the current time
+            if (this.currentLocation !== activeSchedule.locationId) {
+                this.currentLocation = activeSchedule.locationId;
+
+                // Set an initial random target inside the building
+                const targetBuilding = window._buildings.find(building => building.id === activeSchedule.locationId);
+                if (targetBuilding) {
+                    this.wanderWithinBuilding(targetBuilding);
+                }
+            } else if (this.targetPositions.length === 0 && !this.isPaused) {
+                // Wander inside the building after a pause
+                const targetBuilding = window._buildings.find(building => building.id === activeSchedule.locationId);
+                if (targetBuilding) {
+                    this.startPause(() => this.wanderWithinBuilding(targetBuilding));
+                }
+            }
+        } else {
+            // If no schedule is set, wander randomly around the map
+            if (this.targetPositions.length === 0 && !this.isPaused) {
+                this.startPause(() => this.randomWander());
+            }
+        }
+    }
+
+
 
     generatePath(
         start,
@@ -27,10 +87,8 @@ export default class NPC {
         gridHeight = Math.ceil(window._canvas.height / 10),
         cellSize = 10
     ) {
-        // Create a grid and mark obstacles as non-walkable
         const grid = new PF.Grid(gridWidth, gridHeight);
 
-        // Mark obstacle cells as blocked
         obstacles.forEach(obstacle => {
             if (!obstacle.id.includes('door') && obstacle.id !== this.id) {
                 const startX = Math.floor(obstacle.left / cellSize);
@@ -46,19 +104,16 @@ export default class NPC {
             }
         });
 
-        // Convert start and target positions to grid coordinates
         const startX = Math.floor((start.left + 5) / cellSize);
         const startY = Math.floor((start.top + 5) / cellSize);
         const targetX = Math.floor(target.left / cellSize);
         const targetY = Math.floor(target.top / cellSize);
 
-        // Create a pathfinder
         const finder = new PF.AStarFinder({
             allowDiagonal: true,
             dontCrossCorners: true
         });
 
-        // Find a path
         const path = finder.findPath(startX, startY, targetX, targetY, grid);
 
         if (path.length === 0) {
@@ -66,13 +121,11 @@ export default class NPC {
             return [];
         }
 
-        // Convert path from grid coordinates back to real coordinates
         const waypoints = path.map(([x, y]) => ({
             left: x * cellSize + cellSize / 2 - 5, // Adjust for player's center
             top: y * cellSize + cellSize / 2 - 5, // Adjust for player's center
         }));
 
-        // Draw the grid on a canvas
         this.drawGridValues = {
             grid,
             path,
@@ -85,63 +138,38 @@ export default class NPC {
         return waypoints;
     }
 
-// Draw the grid on an HTML canva
-
     drawGrid(params) {
         const {grid, path, start, target, cellSize} = params;
         const ctx = window._context;
 
-        // Set canvas dimensions
         const canvasWidth = window._canvas.width;
         const canvasHeight = window._canvas.height;
 
-        // Draw the grid in light grey (optional, uncomment if needed)
-        // ctx.strokeStyle = "rgba(200, 200, 200, 0.3)"; // Light grey color
-        // ctx.lineWidth = 1;
-        //
-        // for (let x = 0; x <= canvasWidth; x += cellSize) {
-        //     ctx.beginPath();
-        //     ctx.moveTo(x, 0);
-        //     ctx.lineTo(x, canvasHeight);
-        //     ctx.stroke();
-        // }
-        //
-        // for (let y = 0; y <= canvasHeight; y += cellSize) {
-        //     ctx.beginPath();
-        //     ctx.moveTo(0, y);
-        //     ctx.lineTo(canvasWidth, y);
-        //     ctx.stroke();
-        // }
-
-        // Simulate moving dashed line for the path
         ctx.strokeStyle = this.color;
         ctx.lineWidth = 2;
-        ctx.setLineDash([5, 5]); // Dash pattern: [dash length, gap length]
-        ctx.lineDashOffset = this.lineDashOffset; // Apply animated offset
+        ctx.setLineDash([5, 5]);
+        ctx.lineDashOffset = this.lineDashOffset;
         ctx.beginPath();
 
         path.forEach(([x, y], index) => {
             if (index > this.targetIndex - 1) {
-                const centerX = x * cellSize + cellSize / 2; // Center of the cell
-                const centerY = y * cellSize + cellSize / 2; // Center of the cell
+                const centerX = x * cellSize + cellSize / 2;
+                const centerY = y * cellSize + cellSize / 2;
 
                 if (index === 0) {
-                    // Move to the starting point of the path
                     ctx.moveTo(centerX, centerY);
                 } else {
-                    // Draw a line to the next point
                     ctx.lineTo(centerX, centerY);
                 }
             }
         });
 
         ctx.stroke();
-        ctx.setLineDash([]); // Reset dash style
+        ctx.setLineDash([]);
 
-        // Draw the start and target points
         const targetX = Math.floor(target.left / cellSize);
         const targetY = Math.floor(target.top / cellSize);
-        ctx.fillStyle = this.color; // Target point
+        ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(
             targetX * cellSize + cellSize / 2,
@@ -163,13 +191,11 @@ export default class NPC {
 
         let newPosition = {...this.position};
 
-        // Adjust position step-by-step toward the target
         if (Math.abs(deltaX) > 0) newPosition.left += Math.sign(deltaX) * this.speed;
         if (Math.abs(deltaY) > 0) newPosition.top += Math.sign(deltaY) * this.speed;
         newPosition.top = Math.floor(newPosition.top);
         newPosition.left = Math.floor(newPosition.left);
 
-        // Check for collisions
         let canMove = true;
         if (window._obstacles.length) {
             for (const obstacle of window._obstacles) {
@@ -199,43 +225,22 @@ export default class NPC {
         }
     }
 
-    // startPathfinding() {
-    //     setInterval(() => {
-    //         // Check if a valid path already exists
-    //         if (!this.targetPositions.length || !this.canMove) {
-    //             return;
-    //         }
-    //
-    //         // Attempt to generate a path
-    //         console.log('Find a new path');
-    //         this.generatePath(this.position, this.targetPositions[this.targetPositions.length - 1], window._obstacles);
-    //     }, 2000); // Retry every 2 seconds (adjust as needed)
-    // }
-
     setTarget(newTarget) {
-        // Find path to new target and generate targetPositions array
         this.targetIndex = 0;
         this.targetPositions = this.generatePath(this.position, newTarget, window._obstacles);
-    }
-
-    setTargets(newTargets) {
-        this.targetPositions = newTargets;
-        this.targetIndex = 0;
-        this.setTarget(this.targetPositions[this.targetIndex]);
     }
 
     render(context) {
         const {top, left, width, height} = this.position;
         context.fillStyle = this.color;
         context.beginPath();
-        context.fillRect(left, top, width, height); // Draw as a circle
+        context.fillRect(left, top, width, height);
         context.fill();
         context.fillStyle = 'black';
-        context.fillText(this.name, left - width, top - height); // Render NPC name above the circle
-        // if (this.drawGridValues && this.id === 'Player') {
-        if (this.drawGridValues) {
-            this.lineDashOffset -= 1; // Decrement to simulate pulling effect
-            if (this.lineDashOffset < -20) this.lineDashOffset = 0; // Reset for smooth looping
+        context.fillText(this.name, left - width, top - height);
+        if (this.drawGridValues && this.id === 'Player') {
+            this.lineDashOffset -= 1;
+            if (this.lineDashOffset < -20) this.lineDashOffset = 0;
             this.drawGrid(this.drawGridValues);
         }
         if (this.id !== 'Player') {
