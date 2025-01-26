@@ -12,24 +12,23 @@ export default class Player extends NPC {
         // if (this.moveFromClick) {
 
         // } else {
+        if (inputHandler.isKeyPressed('w') || inputHandler.isKeyPressed('s') || inputHandler.isKeyPressed('a') || inputHandler.isKeyPressed('d')) {
+            newPosition = {...this.position};
+        }
         if (inputHandler.isKeyPressed('w')) {
             pressingKey = true;
-            newPosition = {...this.position};
             newPosition.top -= this.speed; // Up
         }
         if (inputHandler.isKeyPressed('s')) {
             pressingKey = true;
-            newPosition = {...this.position};
             newPosition.top += this.speed;
         }
         if (inputHandler.isKeyPressed('a')) {
             pressingKey = true;
-            newPosition = {...this.position};
             newPosition.left -= this.speed;
         }
         if (inputHandler.isKeyPressed('d')) {
             pressingKey = true;
-            newPosition = {...this.position};
             newPosition.left += this.speed;
         }
 
