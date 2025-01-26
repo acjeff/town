@@ -23,9 +23,9 @@ export default class NPC {
         start,
         target,
         obstacles,
-        gridWidth = Math.ceil(window._canvas.width / 20),
-        gridHeight = Math.ceil(window._canvas.height / 20),
-        cellSize = 20
+        gridWidth = Math.ceil(window._canvas.width / 10),
+        gridHeight = Math.ceil(window._canvas.height / 10),
+        cellSize = 10
     ) {
         // Create a grid and mark obstacles as non-walkable
         const grid = new PF.Grid(gridWidth, gridHeight);
@@ -53,7 +53,7 @@ export default class NPC {
         const targetY = Math.floor(target.top / cellSize);
 
         // Create a pathfinder
-        const finder = new PF.BestFirstFinder({
+        const finder = new PF.AStarFinder({
             allowDiagonal: true,
             dontCrossCorners: true
         });
