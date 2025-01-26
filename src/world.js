@@ -7,7 +7,8 @@ import InputHandler from "./InputHandler.js";
 import Camera from "./camera.js";
 import {createObstacles} from "./obstacleService.js";
 import Obstacle from "./obstacle.js";
-const worldSize = 10000;
+import manageWorldTimeAndRender from "./worldClock.js";
+const worldSize = 5000;
 window._canvas = document.getElementById("gameCanvas");
 window._context = window._canvas.getContext('2d');
 window._context.font = "12px Arial"; // Set font size to 20px and font family to Arial
@@ -80,6 +81,16 @@ setTimeout(() => {
     });
 }, 100);
 
+if (!window._obstacles.length) {
+    window._obstacles = window._npcs.map(npc => new Obstacle({
+        id: npc.id,
+        top: npc.position.top,
+        left: npc.position.left,
+        width: 10,
+        height: 10,
+    }));
+}
+
 export function RenderWorld() {
     camera.context.clearRect(0, 0, camera.canvas.width, camera.canvas.height);
     camera.context.font = "10px Arial"; // Set font size to 20px and font family to Arial
@@ -91,19 +102,18 @@ export function RenderWorld() {
     camera.context.save(); // Save the current context state
     camera.context.scale(camera.zoom, camera.zoom); // Apply zoom
     camera.context.translate(-camera.offsetX, -camera.offsetY); // Translate based on camera offset
-
-
     window._buildings.forEach(building => building.render(window._context));
     window._npcs.forEach(npc => npc.render(window._context));
     window._player.render(window._context);
     window._npcs.forEach(npc => npc.moveTowardTarget(window._buildings));
-    createObstacles(window._npcs.map(npc => new Obstacle({
-        id: npc.id,
-        top: npc.position.top,
-        left: npc.position.left,
-        width: 10,
-        height: 10
-    })));
+    window._obstacles.forEach((obstacle, index) => {
+        let npcObstacle = window._npcs.find(npc => npc.id === obstacle.id);
+        if (npcObstacle) {
+            obstacle.top = npcObstacle.position.top;
+            obstacle.left = npcObstacle.position.left;
+        }
+    });
+    // manageWorldTimeAndRender(window._canvas)
 
     camera.context.restore();
     renderInteractionPrompt(window._context, window._player, window._buildings);
