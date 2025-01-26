@@ -1,27 +1,24 @@
 function secondsToTimeFormat(totalSeconds) {
-    // Calculate hours, minutes, and seconds
-    const hours = Math.floor(totalSeconds / 3600); // 1 hour = 3600 seconds
-    const minutes = Math.floor((totalSeconds % 3600) / 60); // Remaining minutes
-    const seconds = totalSeconds % 60; // Remaining seconds
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
 
-    // Pad hours, minutes, and seconds with leading zeros if needed
     const formattedHours = String(hours).padStart(2, '0');
     const formattedMinutes = String(minutes).padStart(2, '0');
     const formattedSeconds = String(seconds).padStart(2, '0');
 
-    // Combine into HH:MM:SS format
     return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
 }
-const dayLength = 86400; // Total length of a day in milliseconds
+const dayLength = 86400;
 setInterval(() => {
     if (window._world_time >= dayLength) {
         window._world_time = 0;
     } else {
-        window._world_time = Math.floor(window._world_time + 1000);
+        window._world_time = Math.floor(window._world_time + 16);
     }
     window._world_percentage_through_day = Math.ceil((window._world_time / dayLength) * 100);
     window._formattedTime = secondsToTimeFormat(window._world_time);
-}, 500);
+}, 16);
 let alpha = 0.1;
 export default function manageWorldTimeAndRender(canvas) {
     const ctx = canvas.getContext("2d");
@@ -34,33 +31,29 @@ export default function manageWorldTimeAndRender(canvas) {
     const colors = {
         dawn: "#FFCC33", // Dawn color
         midday: "#87CEEB", // Midday color
-        dusk: "#FF4500", // Dusk color
-        midnight: "#001933" // Midnight color
+        dusk: "#5e2f11", // Dusk color
+        midnight: "#000000" // Midnight color
     };
 
     // Get the interpolated color based on the time of day
     function getSunlightColor(worldTime) {
-        const t = Math.floor(worldTime / dayLength); // Normalize time to a range of 0-1
-
-        if (t < 0.25) {
+        const t = Math.floor((worldTime / dayLength) * 100);
+        const _t = worldTime / dayLength;
+        if (t < 25) {
             // Dawn to Midday
-            const progress = t / 0.25;
-            alpha = 0.2; // Set fill opacity to 50%
+            const progress = _t / 0.25;
             return interpolateColor(colors.dawn, colors.midday, progress);
-        } else if (t < 0.5) {
+        } else if (t < 50) {
             // Midday to Dusk
-            alpha = 0.2; // Set fill opacity to 50%
-            const progress = (t - 0.25) / 0.25;
+            const progress = (_t - 0.25) / 0.25;
             return interpolateColor(colors.midday, colors.dusk, progress);
-        } else if (t < 0.75) {
-            alpha = 0.9; // Set fill opacity to 50%
+        } else if (t < 75) {
             // Dusk to Midnight
-            const progress = (t - 0.5) / 0.25;
+            const progress = (_t - 0.5) / 0.25;
             return interpolateColor(colors.dusk, colors.midnight, progress);
         } else {
             // Midnight to Dawn
-            alpha = 0.2; // Set fill opacity to 50%
-            const progress = (t - 0.75) / 0.25;
+            const progress = (_t - 0.75) / 0.25;
             return interpolateColor(colors.midnight, colors.dawn, progress);
         }
     }
@@ -87,17 +80,39 @@ export default function manageWorldTimeAndRender(canvas) {
         };
     }
 
+    function mapPercentageToWave(value) {
+        // Ensure the input value is clamped to the range 0-1
+        const clampedValue = Math.max(0, Math.min(1, value));
+
+        // Define the transformation
+        if (clampedValue <= 0.4) {
+            // From 0 to 0.4: Linear increase from 0 to 0.2
+            return clampedValue * 0.5; // Maps 0.4 to 0.2
+        } else if (clampedValue <= 0.6) {
+            // From 0.4 to 0.6: Constant value 0.5
+            return 0.5;
+        } else if (clampedValue <= 0.7) {
+            // From 0.6 to 0.7: Linear increase from 0.5 to 1
+            return 5 * (clampedValue - 0.6) + 0.5; // Maps 0.7 to 1
+        } else if (clampedValue <= 0.8) {
+            // From 0.7 to 0.8: Linear decrease from 1 to 0.8
+            return 1 - 2 * (clampedValue - 0.7); // Maps 0.8 to 0.8
+        } else {
+            // From 0.8 to 1: Linear decrease from 0.8 to 0
+            return 0.8 - 4 * (clampedValue - 0.8); // Maps 1 to 0
+        }
+    }
+
     // Render the overlay
     function renderOverlay() {
         const currentColor = getSunlightColor(window._world_time);
 
         // Draw a full-screen rectangle with the current color
         ctx.fillStyle = currentColor;
-        ctx.globalAlpha = alpha; // Set fill opacity to 50%
+        ctx.globalAlpha = mapPercentageToWave(window._world_time / dayLength); // Set fill opacity to 50%
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.globalAlpha = 1.0; // Reset to full opacity
     }
 
-    console.log()
     renderOverlay();
 }
