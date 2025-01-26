@@ -6,62 +6,29 @@ export default class Player extends NPC {
         this.speed = 1; // Movement speed
     }
 
-    moveTowardTarget() {
-        const deltaX = this.targetPosition.left - this.position.left;
-        const deltaY = this.targetPosition.top - this.position.top;
-
-        let newPosition = {...this.position};
-
-        // Adjust position step-by-step toward the target
-        if (Math.abs(deltaX) > 0) newPosition.left += Math.sign(deltaX) * this.speed;
-        if (Math.abs(deltaY) > 0) newPosition.top += Math.sign(deltaY) * this.speed;
-
-        // Check for collisions
-        let canMove = true;
-        if (window._obstacles.length) {
-            for (const obstacle of window._obstacles) {
-                if (obstacle.isColliding(newPosition, obstacle)) {
-                    canMove = false;
-                    break;
-                }
-            }
-        }
-
-        if (canMove) {
-            this.position = newPosition;
-            if (this.targetPosition.top !== this.position.top) {
-                window._context.fillStyle = 'white';
-                window._context.strokeStyle = 'lightblue';
-                window._context.beginPath();
-                window._context.arc(this.targetPosition.left - window._camera.offsetX, this.targetPosition.top - window._camera.offsetY, 5, 0, Math.PI * 2);
-                window._context.moveTo(this.position.left - window._camera.offsetX, this.position.top - window._camera.offsetY); // Move to point A (starting point)
-                window._context.lineTo(this.targetPosition.left - window._camera.offsetX, this.targetPosition.top - window._camera.offsetY); // Draw a line to point B (ending point)
-                window._context.stroke(); // Render the line
-                window._context.strokeStyle = 'black';
-            }
-
-            window._context.fill();
-        }
-    }
-
     move(inputHandler, buildings) {
         let newPosition = {...this.targetPosition};
+        let pressingKey;
         // if (this.moveFromClick) {
 
         // } else {
         if (inputHandler.isKeyPressed('w')) {
+            pressingKey = true;
             newPosition = {...this.position};
             newPosition.top -= this.speed; // Up
         }
         if (inputHandler.isKeyPressed('s')) {
+            pressingKey = true;
             newPosition = {...this.position};
             newPosition.top += this.speed;
         }
         if (inputHandler.isKeyPressed('a')) {
+            pressingKey = true;
             newPosition = {...this.position};
             newPosition.left -= this.speed;
         }
         if (inputHandler.isKeyPressed('d')) {
+            pressingKey = true;
             newPosition = {...this.position};
             newPosition.left += this.speed;
         }
@@ -79,7 +46,11 @@ export default class Player extends NPC {
 
         // if (canMove) {
         // this.position = newPosition;
-        this.targetPosition = newPosition;
+        if (pressingKey) {
+            this.targetIndex = 0;
+            this.targetPositions = [newPosition];
+            this.drawGridValues = null;
+        }
         // }
         this.moveTowardTarget();
         // }

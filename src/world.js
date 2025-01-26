@@ -1,4 +1,4 @@
-import { Buildings, NPCs, Inventory } from "./data.js";
+import {Buildings, NPCs, Inventory} from "./data.js";
 import {renderInteractionPrompt} from "./InteractionOptions.js";
 import Building from "./building.js";
 import NPC from "./npc.js";
@@ -52,26 +52,6 @@ window.addEventListener('keyup', (evt) => {
     }
 });
 
-// window.addEventListener('mousemove', (evt) => {
-//     const rect = window._canvas.getBoundingClientRect();
-//     const mouseX = evt.clientX - rect.left;
-//     const mouseY = evt.clientY - rect.top;
-//     if (window._player.moveFromClick) {
-//         window._player.targetPosition.top = mouseY;
-//         window._player.targetPosition.left = mouseX;
-//     }
-// });
-
-// window.addEventListener('mousedown', (evt) => {
-
-// });
-
-
-
-// window.addEventListener('mouseup', (evt) => {
-//     window._player.moveFromClick = false;
-// });
-
 // Create instances
 const inputHandler = new InputHandler();
 window._player = new Player({
@@ -79,7 +59,7 @@ window._player = new Player({
     name: 'Player',
     health: 100,
     color: 'blue',
-    position: { top: 600, left: 600 , width: 15, height: 15 },
+    position: {top: 600, left: 600, width: 10, height: 10},
     inventory: Inventory
 });
 const camera = new Camera(window._canvas, window._player);
@@ -88,18 +68,22 @@ window._buildings = Buildings.map(building => new Building(building));
 window._npcs = NPCs.map(npc => new NPC(npc));
 
 // NPC target update logic
-setInterval(() => {
+setTimeout(() => {
     window._npcs.forEach(npc => {
-        // Assign a random target position within canvas bounds
-        // const randomTarget = {
-        //     top: Math.random() * window._canvas.height,
-        //     left: Math.random() * window._canvas.width,
-        // };
         const homeBuilding = window._buildings.find(b => b.id === npc.home);
-        npc.setTarget(homeBuilding.position);
+        npc.setTarget({
+            top: homeBuilding.position.top + homeBuilding.height / 2,
+            left: homeBuilding.position.left + homeBuilding.width / 2
+        });
     });
-}, 3000); // Update every 3 seconds
-
+}, 5000); // Update every 3 seconds
+window._npcs.forEach(npc => {
+    // const homeBuilding = window._buildings.find(b => b.id === npc.home);
+    npc.setTarget({
+        top: Math.random() * window._canvas.height,
+        left: Math.random() * window._canvas.width,
+    });
+});
 
 // Main render loop
 export function RenderWorld() {
@@ -129,6 +113,7 @@ export function RenderWorld() {
     // Update NPC movements, considering collisions with buildings
     window._npcs.forEach(npc => npc.moveTowardTarget(window._buildings));
 }
+
 setCanvasResolution();
 
 // Game loop

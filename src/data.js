@@ -115,7 +115,9 @@ export const Buildings = [
             width: 200,
             height: 200
         },
-        keyId: 'PLAYER_KEYCARD'
+        keyId: 'PLAYER_KEYCARD',
+        locked: false,
+        doorOpen: true
     }
 ]
 export const NPCs = [
@@ -128,8 +130,6 @@ export const NPCs = [
         position: {
             top: 500,
             left: 500,
-            width: 15,
-            height: 15
         },
         personality: {
             openness: 50,
@@ -150,8 +150,6 @@ export const NPCs = [
         position: {
             top: 500,
             left: 480,
-            width: 15,
-            height: 15
         },
         personality: {
             openness: 50,
@@ -172,8 +170,6 @@ export const NPCs = [
         position: {
             top: 500,
             left: 510,
-            width: 15,
-            height: 15
         },
         personality: {
             openness: 50,
@@ -194,8 +190,6 @@ export const NPCs = [
         position: {
             top: 520,
             left: 500,
-            width: 15,
-            height: 15
         },
         personality: {
             openness: 50,

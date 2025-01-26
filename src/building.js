@@ -4,7 +4,7 @@ import {createInteractionOption, removeInteractionOptions} from "./InteractionOp
 import {Inventory} from "./data.js";
 
 export default class Building {
-    constructor({id, name, owner, keyId, width, height, frontDoorFacing, position, locked = true, doorOpen = false}) {
+    constructor({id, name, owner, keyId, width, height, frontDoorFacing, position, locked = false, doorOpen = true}) {
         this.id = id;
         this.name = name;
         this.owner = owner;
