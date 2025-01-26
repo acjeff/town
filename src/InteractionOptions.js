@@ -45,6 +45,11 @@ export function renderInteractionPrompt() {
         20,
         40
     );
+    context.fillText(
+        `${window._world_hours}`,
+        20,
+        60
+    );
 
 }
 

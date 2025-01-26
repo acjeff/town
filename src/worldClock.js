@@ -16,6 +16,7 @@ setInterval(() => {
     } else {
         window._world_time = Math.floor(window._world_time + 16);
     }
+    window._world_hours = Math.round(window._world_time / 3600);
     window._world_percentage_through_day = Math.ceil((window._world_time / dayLength) * 100);
     window._formattedTime = secondsToTimeFormat(window._world_time);
 }, 16);
@@ -81,24 +82,17 @@ export default function manageWorldTimeAndRender(canvas) {
     }
 
     function mapPercentageToWave(value) {
-        // Ensure the input value is clamped to the range 0-1
         const clampedValue = Math.max(0, Math.min(1, value));
 
-        // Define the transformation
         if (clampedValue <= 0.4) {
-            // From 0 to 0.4: Linear increase from 0 to 0.2
             return clampedValue * 0.5; // Maps 0.4 to 0.2
         } else if (clampedValue <= 0.6) {
-            // From 0.4 to 0.6: Constant value 0.5
             return 0.5;
         } else if (clampedValue <= 0.7) {
-            // From 0.6 to 0.7: Linear increase from 0.5 to 1
             return 5 * (clampedValue - 0.6) + 0.5; // Maps 0.7 to 1
         } else if (clampedValue <= 0.8) {
-            // From 0.7 to 0.8: Linear decrease from 1 to 0.8
             return 1 - 2 * (clampedValue - 0.7); // Maps 0.8 to 0.8
         } else {
-            // From 0.8 to 1: Linear decrease from 0.8 to 0
             return 0.8 - 4 * (clampedValue - 0.8); // Maps 1 to 0
         }
     }
