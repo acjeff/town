@@ -9,8 +9,13 @@ function secondsToTimeFormat(totalSeconds) {
 
     return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
 }
+
 const dayLength = 86400;
-setInterval(() => {
+export default function manageWorldTimeAndRender(canvas) {
+    // Ensure global time is initialized
+    if (typeof window._world_time === "undefined") {
+        window._world_time = 0; // Start at the beginning of the day
+    }
     if (window._world_time >= dayLength) {
         window._world_time = 0;
     } else {
@@ -19,15 +24,9 @@ setInterval(() => {
     window._world_hours = window._world_time / 3600;
     window._world_percentage_through_day = Math.ceil((window._world_time / dayLength) * 100);
     window._formattedTime = secondsToTimeFormat(window._world_time);
-}, 16);
-let alpha = 0.1;
-export default function manageWorldTimeAndRender(canvas) {
+
     const ctx = canvas.getContext("2d");
 
-    // Ensure global time is initialized
-    if (typeof window._world_time === "undefined") {
-        window._world_time = 0; // Start at the beginning of the day
-    }
 
     const colors = {
         dawn: "#ef951f", // Dawn color
@@ -36,24 +35,19 @@ export default function manageWorldTimeAndRender(canvas) {
         midnight: "#000000" // Midnight color
     };
 
-    // Get the interpolated color based on the time of day
     function getSunlightColor(worldTime) {
         const t = Math.floor((worldTime / dayLength) * 100);
         const _t = worldTime / dayLength;
         if (t < 25) {
-            // Dawn to Midday
             const progress = _t / 0.25;
             return interpolateColor(colors.dawn, colors.midday, progress);
         } else if (t < 50) {
-            // Midday to Dusk
             const progress = (_t - 0.25) / 0.25;
             return interpolateColor(colors.midday, colors.dusk, progress);
         } else if (t < 75) {
-            // Dusk to Midnight
             const progress = (_t - 0.5) / 0.25;
             return interpolateColor(colors.dusk, colors.midnight, progress);
         } else {
-            // Midnight to Dawn
             const progress = (_t - 0.75) / 0.25;
             return interpolateColor(colors.midnight, colors.dawn, progress);
         }
